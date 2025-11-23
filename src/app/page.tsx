@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import { Header, Footer } from '@/components/layout';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Trophy, Coins, Award, GitBranch, TrendingUp, Shield } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrophy, faBolt, faBullseye, faMedal, faGem, faGamepad, faRocket } from '@fortawesome/free-solid-svg-icons';
+import { faTrophy, faBolt, faBullseye, faMedal, faGem, faGamepad } from '@fortawesome/free-solid-svg-icons';
+import { HeroCTA, BottomCTA } from '@/components/landing/hero-cta';
 
 export default function Home() {
   const features = [
@@ -98,16 +98,7 @@ export default function Home() {
             </div>
 
             <div className="flex flex-col gap-3 w-full">
-              <Link href="/sign-up" className="w-full">
-                <Button size="lg" className="w-full text-lg font-semibold bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 shadow-[0_0_20px_rgba(56,189,248,0.3)] hover:shadow-[0_0_30px_rgba(56,189,248,0.5)] transition-all duration-300">
-                  Start Earning Now <FontAwesomeIcon icon={faRocket} className="ml-2" />
-                </Button>
-              </Link>
-              <Link href="/leaderboard" className="w-full">
-                <Button size="lg" variant="outline" className="w-full border-sky-500/50 text-sky-400 hover:bg-sky-500/10 hover:border-sky-400">
-                  View Leaderboard
-                </Button>
-              </Link>
+              <HeroCTA />
             </div>
 
             <p className="text-xs text-slate-500">
@@ -170,11 +161,7 @@ export default function Home() {
                     Join now and start earning rewards
                   </CardDescription>
                 </div>
-                <Link href="/sign-up" className="w-full block">
-                  <Button size="lg" className="w-full text-lg font-semibold bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 shadow-[0_0_20px_rgba(56,189,248,0.3)] hover:shadow-[0_0_30px_rgba(56,189,248,0.5)] transition-all duration-300">
-                    Start Playing <FontAwesomeIcon icon={faBullseye} className="ml-2" />
-                  </Button>
-                </Link>
+                <BottomCTA />
               </div>
             </CardContent>
           </Card>
