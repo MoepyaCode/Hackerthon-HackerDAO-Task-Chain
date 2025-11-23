@@ -49,7 +49,7 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-sky-500/20 bg-slate-950/95 backdrop-blur-xl shadow-[0_-4px_20px_rgba(56,189,248,0.1)]">
       <div className="grid grid-cols-3 gap-1 p-2">
         {navItems.slice(0, 3).map((item) => {
           const Icon = item.icon;
@@ -59,13 +59,13 @@ export function BottomNav() {
               key={item.href}
               href={item.href}
               className={cn(
-                'flex flex-col items-center gap-1 rounded-lg px-3 py-2 text-xs transition-colors',
+                'flex flex-col items-center gap-1 rounded-lg px-3 py-2 text-xs transition-all duration-300',
                 isActive
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground'
+                  ? 'bg-gradient-to-br from-sky-500/20 to-blue-500/10 text-sky-400 border border-sky-500/30 shadow-[0_0_10px_rgba(56,189,248,0.2)]'
+                  : 'text-slate-400 hover:text-sky-400 hover:bg-sky-500/5'
               )}
             >
-              <Icon className="h-5 w-5" />
+              <Icon className={cn("h-5 w-5", isActive && "drop-shadow-[0_0_5px_rgba(56,189,248,0.5)]")} />
               <span>{item.title}</span>
             </Link>
           );

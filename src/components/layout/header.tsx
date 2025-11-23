@@ -8,13 +8,13 @@ export function Header() {
   const { isSignedIn } = useUser();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
+    <header className="sticky top-0 z-50 w-full border-b border-sky-500/20 bg-slate-950/90 backdrop-blur-xl shadow-[0_4px_20px_rgba(56,189,248,0.1)]">
       <div className="flex h-14 items-center px-4">
-        <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground text-xs">
+        <Link href="/" className="flex items-center gap-2 font-bold text-lg group">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-sky-500 to-blue-600 text-white text-xs shadow-[0_0_10px_rgba(56,189,248,0.3)] group-hover:shadow-[0_0_15px_rgba(56,189,248,0.5)] transition-all duration-300">
             TC
           </div>
-          <span>TaskChain</span>
+          <span className="bg-gradient-to-r from-slate-100 to-sky-400 bg-clip-text text-transparent">TaskChain</span>
         </Link>
 
         <div className="ml-auto flex items-center gap-2">
@@ -23,10 +23,10 @@ export function Header() {
           ) : (
             <div className="flex items-center gap-2">
               <Link href="/sign-in">
-                <Button variant="ghost" size="sm">Sign In</Button>
+                <Button variant="ghost" size="sm" className="text-sky-400 hover:text-sky-300 hover:bg-sky-500/10">Sign In</Button>
               </Link>
               <Link href="/sign-up">
-                <Button size="sm">Start</Button>
+                <Button size="sm" className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 shadow-[0_0_10px_rgba(56,189,248,0.2)] hover:shadow-[0_0_15px_rgba(56,189,248,0.4)] transition-all duration-300">Start</Button>
               </Link>
             </div>
           )}

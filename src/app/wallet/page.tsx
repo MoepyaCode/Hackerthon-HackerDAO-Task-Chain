@@ -15,16 +15,16 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import {
-    Wallet,
-    Coins,
-    Award,
-    TrendingUp,
-    ExternalLink,
-    Copy,
-    CheckCircle2,
+  Wallet,
+  Coins,
+  Award,
+  TrendingUp,
+  ExternalLink,
+  Copy,
+  CheckCircle2,
 } from 'lucide-react';
-
-export default function WalletPage() {
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBullseye, faRocket, faFire, faCertificate } from '@fortawesome/free-solid-svg-icons';export default function WalletPage() {
     const [copied, setCopied] = useState(false);
 
     // Mock data - will be replaced with real data from API
@@ -73,7 +73,7 @@ export default function WalletPage() {
             id: '1',
             name: 'First Contribution',
             description: 'Made your first contribution',
-            imageUrl: '🎯',
+            imageUrl: faBullseye,
             earnedAt: '2024-11-01',
             isMinted: true,
             nftTokenId: '42',
@@ -82,7 +82,7 @@ export default function WalletPage() {
             id: '2',
             name: '10 PRs Merged',
             description: 'Successfully merged 10 pull requests',
-            imageUrl: '🚀',
+            imageUrl: faRocket,
             earnedAt: '2024-11-10',
             isMinted: true,
             nftTokenId: '87',
@@ -91,7 +91,7 @@ export default function WalletPage() {
             id: '3',
             name: '100 Points',
             description: 'Earned 100 total points',
-            imageUrl: '💯',
+            imageUrl: faFire,
             earnedAt: '2024-11-15',
             isMinted: false,
             nftTokenId: null,
@@ -107,70 +107,70 @@ export default function WalletPage() {
     const getStatusBadge = (status: string) => {
         switch (status) {
             case 'COMPLETED':
-                return <Badge variant="default" className="bg-green-500">Completed</Badge>;
+                return <Badge variant="default" className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">Completed</Badge>;
             case 'PROCESSING':
-                return <Badge variant="secondary">Processing</Badge>;
+                return <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">Processing</Badge>;
             case 'FAILED':
-                return <Badge variant="destructive">Failed</Badge>;
+                return <Badge variant="destructive" className="bg-rose-500/20 text-rose-400 border-rose-500/30">Failed</Badge>;
             default:
-                return <Badge>{status}</Badge>;
+                return <Badge className="bg-sky-500/20 text-sky-400 border-sky-500/30">{status}</Badge>;
         }
     };
 
     return (
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col min-h-screen bg-slate-950">
             <Header />
             <main className="flex-1 p-4 space-y-4 pb-20">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight">Wallet</h1>
-                    <p className="text-sm text-muted-foreground">
+                <div className="space-y-1">
+                    <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-slate-100 to-sky-400 bg-clip-text text-transparent">Wallet</h1>
+                    <p className="text-sm text-slate-400">
                         Manage your rewards and NFT badges
                     </p>
                 </div>
 
                 {/* Wallet Overview Card */}
-                <Card className="border-2">
+                <Card className="border-2 border-sky-500/30 bg-slate-900/50 backdrop-blur-sm shadow-[0_0_20px_rgba(56,189,248,0.1)]">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Wallet className="h-5 w-5" />
+                        <CardTitle className="flex items-center gap-2 text-slate-100">
+                            <Wallet className="h-5 w-5 text-sky-400" />
                             Wallet Overview
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        <div className="relative flex items-center justify-between p-4 bg-muted rounded-lg">
+                        <div className="relative flex items-center justify-between p-4 bg-slate-800/50 border border-sky-500/20 rounded-lg">
                             <div className='w-full'>
                                 <div className='flex justify-between items-center'>
-                                    <p className="text-sm text-muted-foreground mb-1">Wallet Address</p>
+                                    <p className="text-sm text-slate-400 mb-1">Wallet Address</p>
                                     <Button
                                         variant="ghost"
                                         size="icon"
                                         onClick={copyAddress}
-                                        className="shrink-0"
+                                        className="shrink-0 hover:bg-sky-500/10 hover:text-sky-400"
                                     >
                                         {copied ? (
-                                            <CheckCircle2 className="h-4 w-4 text-green-500" />
+                                            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
                                         ) : (
                                             <Copy className="h-4 w-4" />
                                         )}
                                     </Button>
                                 </div>
-                                <code className="text-sm font-mono overflow-hidden text-ellipsis whitespace-nowrap block">{walletData.address}</code>
+                                <code className="text-sm font-mono overflow-hidden text-ellipsis whitespace-nowrap block text-sky-400">{walletData.address}</code>
                             </div>
 
                         </div>
 
                         <div className="grid gap-3 grid-cols-1">
-                            <div className="space-y-2">
-                                <p className="text-sm text-muted-foreground">Current Balance</p>
-                                <p className="text-2xl font-bold">{walletData.balance} CELO</p>
+                            <div className="space-y-2 p-3 rounded-lg bg-slate-800/30 border border-sky-500/10">
+                                <p className="text-sm text-slate-400">Current Balance</p>
+                                <p className="text-2xl font-bold text-sky-400">{walletData.balance} CELO</p>
                             </div>
-                            <div className="space-y-2">
-                                <p className="text-sm text-muted-foreground">Total Earned</p>
-                                <p className="text-2xl font-bold">{walletData.totalEarned} CELO</p>
+                            <div className="space-y-2 p-3 rounded-lg bg-slate-800/30 border border-sky-500/10">
+                                <p className="text-sm text-slate-400">Total Earned</p>
+                                <p className="text-2xl font-bold text-slate-100">{walletData.totalEarned} CELO</p>
                             </div>
-                            <div className="space-y-2">
-                                <p className="text-sm text-muted-foreground">Pending Rewards</p>
-                                <p className="text-2xl font-bold">{walletData.pendingRewards} CELO</p>
+                            <div className="space-y-2 p-3 rounded-lg bg-slate-800/30 border border-sky-500/10">
+                                <p className="text-sm text-slate-400">Pending Rewards</p>
+                                <p className="text-2xl font-bold text-yellow-400">{walletData.pendingRewards} CELO</p>
                             </div>
                         </div>
                     </CardContent>
@@ -178,46 +178,46 @@ export default function WalletPage() {
 
                 {/* Stats Grid */}
                 <div className="grid gap-3 grid-cols-1">
-                    <Card>
+                    <Card className="bg-slate-900/50 backdrop-blur-sm border-sky-500/20 hover:border-sky-400/50 transition-all duration-300 group">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">
+                            <CardTitle className="text-sm font-medium text-slate-200">
                                 Total Rewards
                             </CardTitle>
-                            <Coins className="h-4 w-4 text-muted-foreground" />
+                            <Coins className="h-4 w-4 text-sky-400 group-hover:text-sky-300 transition-colors" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">
+                            <div className="text-2xl font-bold text-sky-400">
                                 {walletData.totalEarned} CELO
                             </div>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-xs text-slate-400">
                                 All time earnings
                             </p>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="bg-slate-900/50 backdrop-blur-sm border-sky-500/20 hover:border-sky-400/50 transition-all duration-300 group">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">NFT Badges</CardTitle>
-                            <Award className="h-4 w-4 text-muted-foreground" />
+                            <CardTitle className="text-sm font-medium text-slate-200">NFT Badges</CardTitle>
+                            <Award className="h-4 w-4 text-sky-400 group-hover:text-sky-300 transition-colors" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{badges.length}</div>
-                            <p className="text-xs text-muted-foreground">
+                            <div className="text-2xl font-bold text-slate-100">{badges.length}</div>
+                            <p className="text-xs text-slate-400">
                                 {badges.filter((b) => b.isMinted).length} minted
                             </p>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="bg-slate-900/50 backdrop-blur-sm border-sky-500/20 hover:border-sky-400/50 transition-all duration-300 group">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">
+                            <CardTitle className="text-sm font-medium text-slate-200">
                                 Average Weekly
                             </CardTitle>
-                            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                            <TrendingUp className="h-4 w-4 text-sky-400 group-hover:text-sky-300 transition-colors" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">42.5 CELO</div>
-                            <p className="text-xs text-muted-foreground">
+                            <div className="text-2xl font-bold text-slate-100">42.5 CELO</div>
+                            <p className="text-xs text-slate-400">
                                 Last 4 weeks
                             </p>
                         </CardContent>
@@ -226,41 +226,41 @@ export default function WalletPage() {
 
                 {/* Tabs */}
                 <Tabs defaultValue="transactions" className="space-y-4">
-                    <TabsList>
-                        <TabsTrigger value="transactions">Transactions</TabsTrigger>
-                        <TabsTrigger value="badges">NFT Badges</TabsTrigger>
+                    <TabsList className="bg-slate-900/50 border border-sky-500/20">
+                        <TabsTrigger value="transactions" className="data-[state=active]:bg-sky-500/20 data-[state=active]:text-sky-400">Transactions</TabsTrigger>
+                        <TabsTrigger value="badges" className="data-[state=active]:bg-sky-500/20 data-[state=active]:text-sky-400">NFT Badges</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="transactions" className="space-y-4">
-                        <Card>
+                        <Card className="bg-slate-900/50 backdrop-blur-sm border-sky-500/20">
                             <CardHeader>
-                                <CardTitle>Transaction History</CardTitle>
-                                <CardDescription>
+                                <CardTitle className="text-slate-100">Transaction History</CardTitle>
+                                <CardDescription className="text-slate-400">
                                     Your reward payouts and transaction history
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <Table>
                                     <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Description</TableHead>
-                                            <TableHead>Date</TableHead>
-                                            <TableHead className="text-right">Amount</TableHead>
-                                            <TableHead>Status</TableHead>
-                                            <TableHead>Transaction</TableHead>
+                                        <TableRow className="border-sky-500/20 hover:bg-sky-500/5">
+                                            <TableHead className="text-slate-300">Description</TableHead>
+                                            <TableHead className="text-slate-300">Date</TableHead>
+                                            <TableHead className="text-right text-slate-300">Amount</TableHead>
+                                            <TableHead className="text-slate-300">Status</TableHead>
+                                            <TableHead className="text-slate-300">Transaction</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {transactions.map((tx) => (
-                                            <TableRow key={tx.id}>
+                                            <TableRow key={tx.id} className="border-sky-500/10 hover:bg-sky-500/5 transition-colors">
                                                 <TableCell>
                                                     <div className="flex items-center gap-2">
-                                                        <Coins className="h-4 w-4 text-muted-foreground" />
-                                                        <span>{tx.description}</span>
+                                                        <Coins className="h-4 w-4 text-sky-400" />
+                                                        <span className="text-slate-200">{tx.description}</span>
                                                     </div>
                                                 </TableCell>
-                                                <TableCell>{tx.date}</TableCell>
-                                                <TableCell className="text-right font-bold">
+                                                <TableCell className="text-slate-300">{tx.date}</TableCell>
+                                                <TableCell className="text-right font-bold text-sky-400">
                                                     {tx.amount} {tx.currency}
                                                 </TableCell>
                                                 <TableCell>{getStatusBadge(tx.status)}</TableCell>
@@ -270,7 +270,7 @@ export default function WalletPage() {
                                                             href={`https://explorer.celo.org/tx/${tx.txHash}`}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            className="flex items-center gap-1 text-primary hover:underline"
+                                                            className="flex items-center gap-1 text-sky-400 hover:text-sky-300 hover:underline"
                                                         >
                                                             <span className="font-mono text-sm">
                                                                 {tx.txHash.slice(0, 8)}...
@@ -278,7 +278,7 @@ export default function WalletPage() {
                                                             <ExternalLink className="h-3 w-3" />
                                                         </a>
                                                     ) : (
-                                                        <span className="text-sm text-muted-foreground">—</span>
+                                                        <span className="text-sm text-slate-500">—</span>
                                                     )}
                                                 </TableCell>
                                             </TableRow>
@@ -290,46 +290,48 @@ export default function WalletPage() {
                     </TabsContent>
 
                     <TabsContent value="badges" className="space-y-4">
-                        <Card>
+                        <Card className="bg-slate-900/50 backdrop-blur-sm border-sky-500/20">
                             <CardHeader>
-                                <CardTitle>Your NFT Badges</CardTitle>
-                                <CardDescription>
+                                <CardTitle className="text-slate-100">Your NFT Badges</CardTitle>
+                                <CardDescription className="text-slate-400">
                                     Badges earned for milestones and achievements
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <div className="grid gap-3 grid-cols-1">
                                     {badges.map((badge) => (
-                                        <Card key={badge.id} className="border-2">
+                                        <Card key={badge.id} className="border-2 border-sky-500/30 bg-slate-800/50 hover:bg-slate-800/70 hover:border-sky-400/50 transition-all duration-300 group">
                                             <CardHeader className="space-y-4">
                                                 <div className="flex items-center justify-between">
-                                                    <div className="text-5xl">{badge.imageUrl}</div>
+                                                    <div className="text-5xl text-sky-400 group-hover:text-sky-300 transition-colors drop-shadow-[0_0_15px_rgba(56,189,248,0.3)]">
+                                                        <FontAwesomeIcon icon={badge.imageUrl} />
+                                                    </div>
                                                     {badge.isMinted ? (
-                                                        <Badge variant="default" className="bg-green-500">
+                                                        <Badge variant="default" className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
                                                             Minted
                                                         </Badge>
                                                     ) : (
-                                                        <Badge variant="secondary">Not Minted</Badge>
+                                                        <Badge variant="secondary" className="bg-slate-700/50 text-slate-300 border-slate-600/50">Not Minted</Badge>
                                                     )}
                                                 </div>
                                                 <div>
-                                                    <CardTitle className="text-base">{badge.name}</CardTitle>
-                                                    <CardDescription className="text-sm mt-1">
+                                                    <CardTitle className="text-base text-slate-100">{badge.name}</CardTitle>
+                                                    <CardDescription className="text-sm mt-1 text-slate-400">
                                                         {badge.description}
                                                     </CardDescription>
                                                 </div>
                                             </CardHeader>
                                             <CardContent className="space-y-2">
-                                                <div className="text-xs text-muted-foreground">
+                                                <div className="text-xs text-slate-400">
                                                     Earned: {badge.earnedAt}
                                                 </div>
                                                 {badge.isMinted && badge.nftTokenId && (
-                                                    <div className="text-xs text-muted-foreground">
+                                                    <div className="text-xs text-sky-400">
                                                         Token ID: #{badge.nftTokenId}
                                                     </div>
                                                 )}
                                                 {!badge.isMinted && (
-                                                    <Button size="sm" className="w-full mt-2">
+                                                    <Button size="sm" className="w-full mt-2 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 shadow-[0_0_15px_rgba(56,189,248,0.2)] hover:shadow-[0_0_20px_rgba(56,189,248,0.4)] transition-all duration-300">
                                                         Mint NFT
                                                     </Button>
                                                 )}
