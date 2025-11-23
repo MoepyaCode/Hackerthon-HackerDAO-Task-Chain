@@ -1,0 +1,348 @@
+'use client';
+
+import { useState } from 'react';
+import { Header, BottomNav } from '@/components/layout';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
+import {
+    Wallet,
+    Coins,
+    Award,
+    TrendingUp,
+    ExternalLink,
+    Copy,
+    CheckCircle2,
+} from 'lucide-react';
+
+export default function WalletPage() {
+    const [copied, setCopied] = useState(false);
+
+    // Mock data - will be replaced with real data from API
+    const walletData = {
+        address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb',
+        balance: '125.50',
+        totalEarned: '325.75',
+        pendingRewards: '45.25',
+    };
+
+    const transactions = [
+        {
+            id: '1',
+            type: 'REWARD',
+            amount: '50.00',
+            currency: 'CELO',
+            status: 'COMPLETED',
+            txHash: '0xabc123...def456',
+            date: '2024-11-20',
+            description: 'Weekly reward - Week 47',
+        },
+        {
+            id: '2',
+            type: 'REWARD',
+            amount: '35.25',
+            currency: 'CELO',
+            status: 'COMPLETED',
+            txHash: '0x789xyz...456abc',
+            date: '2024-11-13',
+            description: 'Weekly reward - Week 46',
+        },
+        {
+            id: '3',
+            type: 'REWARD',
+            amount: '45.25',
+            currency: 'CELO',
+            status: 'PROCESSING',
+            txHash: null,
+            date: '2024-11-23',
+            description: 'Weekly reward - Week 48',
+        },
+    ];
+
+    const badges = [
+        {
+            id: '1',
+            name: 'First Contribution',
+            description: 'Made your first contribution',
+            imageUrl: '🎯',
+            earnedAt: '2024-11-01',
+            isMinted: true,
+            nftTokenId: '42',
+        },
+        {
+            id: '2',
+            name: '10 PRs Merged',
+            description: 'Successfully merged 10 pull requests',
+            imageUrl: '🚀',
+            earnedAt: '2024-11-10',
+            isMinted: true,
+            nftTokenId: '87',
+        },
+        {
+            id: '3',
+            name: '100 Points',
+            description: 'Earned 100 total points',
+            imageUrl: '💯',
+            earnedAt: '2024-11-15',
+            isMinted: false,
+            nftTokenId: null,
+        },
+    ];
+
+    const copyAddress = () => {
+        navigator.clipboard.writeText(walletData.address);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    const getStatusBadge = (status: string) => {
+        switch (status) {
+            case 'COMPLETED':
+                return <Badge variant="default" className="bg-green-500">Completed</Badge>;
+            case 'PROCESSING':
+                return <Badge variant="secondary">Processing</Badge>;
+            case 'FAILED':
+                return <Badge variant="destructive">Failed</Badge>;
+            default:
+                return <Badge>{status}</Badge>;
+        }
+    };
+
+    return (
+        <div className="flex flex-col min-h-screen">
+            <Header />
+            <main className="flex-1 p-4 space-y-4 pb-20">
+                <div>
+                    <h1 className="text-2xl font-bold tracking-tight">Wallet</h1>
+                    <p className="text-sm text-muted-foreground">
+                        Manage your rewards and NFT badges
+                    </p>
+                </div>
+
+                {/* Wallet Overview Card */}
+                <Card className="border-2">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Wallet className="h-5 w-5" />
+                            Wallet Overview
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <div className="relative flex items-center justify-between p-4 bg-muted rounded-lg">
+                            <div className='w-full'>
+                                <div className='flex justify-between items-center'>
+                                    <p className="text-sm text-muted-foreground mb-1">Wallet Address</p>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={copyAddress}
+                                        className="shrink-0"
+                                    >
+                                        {copied ? (
+                                            <CheckCircle2 className="h-4 w-4 text-green-500" />
+                                        ) : (
+                                            <Copy className="h-4 w-4" />
+                                        )}
+                                    </Button>
+                                </div>
+                                <code className="text-sm font-mono overflow-hidden text-ellipsis whitespace-nowrap block">{walletData.address}</code>
+                            </div>
+
+                        </div>
+
+                        <div className="grid gap-3 grid-cols-1">
+                            <div className="space-y-2">
+                                <p className="text-sm text-muted-foreground">Current Balance</p>
+                                <p className="text-2xl font-bold">{walletData.balance} CELO</p>
+                            </div>
+                            <div className="space-y-2">
+                                <p className="text-sm text-muted-foreground">Total Earned</p>
+                                <p className="text-2xl font-bold">{walletData.totalEarned} CELO</p>
+                            </div>
+                            <div className="space-y-2">
+                                <p className="text-sm text-muted-foreground">Pending Rewards</p>
+                                <p className="text-2xl font-bold">{walletData.pendingRewards} CELO</p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Stats Grid */}
+                <div className="grid gap-3 grid-cols-1">
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">
+                                Total Rewards
+                            </CardTitle>
+                            <Coins className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">
+                                {walletData.totalEarned} CELO
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                All time earnings
+                            </p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">NFT Badges</CardTitle>
+                            <Award className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{badges.length}</div>
+                            <p className="text-xs text-muted-foreground">
+                                {badges.filter((b) => b.isMinted).length} minted
+                            </p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">
+                                Average Weekly
+                            </CardTitle>
+                            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">42.5 CELO</div>
+                            <p className="text-xs text-muted-foreground">
+                                Last 4 weeks
+                            </p>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Tabs */}
+                <Tabs defaultValue="transactions" className="space-y-4">
+                    <TabsList>
+                        <TabsTrigger value="transactions">Transactions</TabsTrigger>
+                        <TabsTrigger value="badges">NFT Badges</TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="transactions" className="space-y-4">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Transaction History</CardTitle>
+                                <CardDescription>
+                                    Your reward payouts and transaction history
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Description</TableHead>
+                                            <TableHead>Date</TableHead>
+                                            <TableHead className="text-right">Amount</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead>Transaction</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {transactions.map((tx) => (
+                                            <TableRow key={tx.id}>
+                                                <TableCell>
+                                                    <div className="flex items-center gap-2">
+                                                        <Coins className="h-4 w-4 text-muted-foreground" />
+                                                        <span>{tx.description}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>{tx.date}</TableCell>
+                                                <TableCell className="text-right font-bold">
+                                                    {tx.amount} {tx.currency}
+                                                </TableCell>
+                                                <TableCell>{getStatusBadge(tx.status)}</TableCell>
+                                                <TableCell>
+                                                    {tx.txHash ? (
+                                                        <a
+                                                            href={`https://explorer.celo.org/tx/${tx.txHash}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="flex items-center gap-1 text-primary hover:underline"
+                                                        >
+                                                            <span className="font-mono text-sm">
+                                                                {tx.txHash.slice(0, 8)}...
+                                                            </span>
+                                                            <ExternalLink className="h-3 w-3" />
+                                                        </a>
+                                                    ) : (
+                                                        <span className="text-sm text-muted-foreground">—</span>
+                                                    )}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    <TabsContent value="badges" className="space-y-4">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Your NFT Badges</CardTitle>
+                                <CardDescription>
+                                    Badges earned for milestones and achievements
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="grid gap-3 grid-cols-1">
+                                    {badges.map((badge) => (
+                                        <Card key={badge.id} className="border-2">
+                                            <CardHeader className="space-y-4">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="text-5xl">{badge.imageUrl}</div>
+                                                    {badge.isMinted ? (
+                                                        <Badge variant="default" className="bg-green-500">
+                                                            Minted
+                                                        </Badge>
+                                                    ) : (
+                                                        <Badge variant="secondary">Not Minted</Badge>
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    <CardTitle className="text-base">{badge.name}</CardTitle>
+                                                    <CardDescription className="text-sm mt-1">
+                                                        {badge.description}
+                                                    </CardDescription>
+                                                </div>
+                                            </CardHeader>
+                                            <CardContent className="space-y-2">
+                                                <div className="text-xs text-muted-foreground">
+                                                    Earned: {badge.earnedAt}
+                                                </div>
+                                                {badge.isMinted && badge.nftTokenId && (
+                                                    <div className="text-xs text-muted-foreground">
+                                                        Token ID: #{badge.nftTokenId}
+                                                    </div>
+                                                )}
+                                                {!badge.isMinted && (
+                                                    <Button size="sm" className="w-full mt-2">
+                                                        Mint NFT
+                                                    </Button>
+                                                )}
+                                            </CardContent>
+                                        </Card>
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+                </Tabs>
+            </main>
+            <BottomNav />
+        </div>
+    );
+}

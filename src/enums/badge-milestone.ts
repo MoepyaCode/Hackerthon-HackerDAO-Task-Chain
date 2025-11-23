@@ -1,0 +1,33 @@
+export enum BadgeMilestone {
+  FIRST_CONTRIBUTION = 'FIRST_CONTRIBUTION',
+  ISSUES_10 = 'ISSUES_10',
+  ISSUES_50 = 'ISSUES_50',
+  ISSUES_100 = 'ISSUES_100',
+  PRS_10 = 'PRS_10',
+  PRS_50 = 'PRS_50',
+  PRS_100 = 'PRS_100',
+  COMMITS_100 = 'COMMITS_100',
+  COMMITS_500 = 'COMMITS_500',
+  COMMITS_1000 = 'COMMITS_1000',
+  POINTS_100 = 'POINTS_100',
+  POINTS_500 = 'POINTS_500',
+  POINTS_1000 = 'POINTS_1000',
+  TOP_CONTRIBUTOR = 'TOP_CONTRIBUTOR',
+}
+
+export const BADGE_MILESTONE_LABELS: Record<BadgeMilestone, string> = {
+  [BadgeMilestone.FIRST_CONTRIBUTION]: 'First Contribution',
+  [BadgeMilestone.ISSUES_10]: '10 Issues Closed',
+  [BadgeMilestone.ISSUES_50]: '50 Issues Closed',
+  [BadgeMilestone.ISSUES_100]: '100 Issues Closed',
+  [BadgeMilestone.PRS_10]: '10 PRs Merged',
+  [BadgeMilestone.PRS_50]: '50 PRs Merged',
+  [BadgeMilestone.PRS_100]: '100 PRs Merged',
+  [BadgeMilestone.COMMITS_100]: '100 Commits',
+  [BadgeMilestone.COMMITS_500]: '500 Commits',
+  [BadgeMilestone.COMMITS_1000]: '1000 Commits',
+  [BadgeMilestone.POINTS_100]: '100 Points',
+  [BadgeMilestone.POINTS_500]: '500 Points',
+  [BadgeMilestone.POINTS_1000]: '1000 Points',
+  [BadgeMilestone.TOP_CONTRIBUTOR]: 'Top Contributor',
+};
