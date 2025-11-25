@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { UserButton, useUser } from '@clerk/nextjs';
+import { UserButton, OrganizationSwitcher, useUser } from '@clerk/nextjs';
 import { Button } from '@/components/ui/button';
 
 export function Header() {
@@ -17,9 +17,32 @@ export function Header() {
           <span className="bg-gradient-to-r from-slate-100 to-sky-400 bg-clip-text text-transparent">TaskChain</span>
         </Link>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-4">
           {isSignedIn ? (
-            <UserButton afterSignOutUrl="/" />
+            <>
+              <OrganizationSwitcher
+                hidePersonal={false}
+                afterSelectOrganizationUrl="/organization/:slug"
+                afterSelectPersonalUrl="/dashboard"
+                createOrganizationMode="navigation"
+                createOrganizationUrl="/dashboard"
+                appearance={{
+                  elements: {
+                    rootBox: 'flex items-center',
+                    organizationSwitcherTrigger: 'px-3 py-1.5 rounded-md bg-slate-900/50 border border-sky-500/20 hover:border-sky-500/40 transition-colors',
+                    organizationPreviewAvatarBox: 'w-6 h-6',
+                  },
+                }}
+              />
+              <UserButton 
+                afterSignOutUrl="/"
+                appearance={{
+                  elements: {
+                    avatarBox: 'w-8 h-8',
+                  },
+                }}
+              />
+            </>
           ) : (
             <div className="flex items-center gap-2">
               <Link href="/sign-in">

@@ -7,7 +7,7 @@ export default function SignInPage() {
         <div className="text-center">
           <h1 className="text-3xl font-bold tracking-tight">Welcome back</h1>
           <p className="mt-2 text-muted-foreground">
-            Sign in to your TaskChain account
+            Sign in with GitHub to access your dashboard
           </p>
         </div>
         <SignIn
@@ -20,6 +20,8 @@ export default function SignInPage() {
           routing="path"
           path="/sign-in"
           signUpUrl="/sign-up"
+          forceRedirectUrl="/dashboard"
+          fallbackRedirectUrl="/dashboard"
         />
       </div>
     </div>

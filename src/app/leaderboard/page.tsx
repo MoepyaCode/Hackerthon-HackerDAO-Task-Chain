@@ -1,6 +1,7 @@
 'use client';
 
-import { Header, BottomNav } from '@/components/layout';
+import { useState, useEffect } from 'react';
+import { Header, BottomNav, Breadcrumbs } from '@/components/layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -14,78 +15,81 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Trophy, TrendingUp, TrendingDown, Medal } from 'lucide-react';
+import { LeaderboardService } from '@/services/leaderboard.service';
+
+interface LeaderboardEntry {
+  rank: number;
+  userId: string;
+  githubUsername: string;
+  avatarUrl?: string | null;
+  totalPoints: number;
+  issuesClosed: number;
+  prsOpened: number;
+  prsMerged: number;
+  commitsPushed: number;
+  change: number;
+}
+
+interface LeaderboardStats {
+  totalContributors: number;
+  totalPoints: number;
+  totalContributions: number;
+}
+
+interface LeaderboardData {
+  stats: LeaderboardStats;
+  leaderboardData: LeaderboardEntry[];
+}
 
 export default function LeaderboardPage() {
+  const [data, setData] = useState<LeaderboardData | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Mock data - will be replaced with real data from API
-  const leaderboardData = [
-    {
-      rank: 1,
-      userId: '1',
-      githubUsername: 'alice_dev',
-      avatarUrl: null,
-      totalPoints: 2450,
-      issuesClosed: 78,
-      prsOpened: 45,
-      prsMerged: 42,
-      commitsPushed: 320,
-      change: 2, // Moved up 2 positions
-    },
-    {
-      rank: 2,
-      userId: '2',
-      githubUsername: 'bob_coder',
-      avatarUrl: null,
-      totalPoints: 2180,
-      issuesClosed: 65,
-      prsOpened: 38,
-      prsMerged: 35,
-      commitsPushed: 290,
-      change: -1, // Moved down 1 position
-    },
-    {
-      rank: 3,
-      userId: '3',
-      githubUsername: 'charlie_eng',
-      avatarUrl: null,
-      totalPoints: 1890,
-      issuesClosed: 52,
-      prsOpened: 32,
-      prsMerged: 30,
-      commitsPushed: 245,
-      change: 1,
-    },
-    {
-      rank: 4,
-      userId: '4',
-      githubUsername: 'diana_tech',
-      avatarUrl: null,
-      totalPoints: 1750,
-      issuesClosed: 48,
-      prsOpened: 28,
-      prsMerged: 26,
-      commitsPushed: 220,
-      change: -2,
-    },
-    {
-      rank: 5,
-      userId: '5',
-      githubUsername: 'evan_code',
-      avatarUrl: null,
-      totalPoints: 1620,
-      issuesClosed: 44,
-      prsOpened: 25,
-      prsMerged: 23,
-      commitsPushed: 198,
-      change: 0,
-    },
-  ];
+  useEffect(() => {
+    async function loadData() {
+      try {
+        // Using service layer to load data
+        const [leaderboardData, stats] = await Promise.all([
+          LeaderboardService.getLeaderboard({}),
+          LeaderboardService.getLeaderboardStats({}),
+        ]);
+        setData({ leaderboardData, stats });
+        setLoading(false);
+      } catch (err) {
+        console.error('Failed to load leaderboard data:', err);
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
 
-  const stats = {
-    totalContributors: 48,
-    totalPoints: 28450,
-    totalContributions: 2847,
-  };
+  if (loading) {
+    return (
+      <div className="flex flex-col min-h-screen bg-slate-950">
+        <Header />
+        <Breadcrumbs />
+        <main className="flex-1 p-4">
+          <p className="text-slate-400">Loading...</p>
+        </main>
+        <BottomNav />
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="flex flex-col min-h-screen bg-slate-950">
+        <Header />
+        <Breadcrumbs />
+        <main className="flex-1 p-4">
+          <p className="text-slate-400">Failed to load leaderboard data</p>
+        </main>
+        <BottomNav />
+      </div>
+    );
+  }
+
+  const { stats, leaderboardData } = data;
 
   const getRankBadge = (rank: number) => {
     switch (rank) {
@@ -122,6 +126,7 @@ export default function LeaderboardPage() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-950">
       <Header />
+      <Breadcrumbs />
       <main className="flex-1 p-4 space-y-4 pb-20">
         <div className="space-y-1">
           <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-slate-100 to-sky-400 bg-clip-text text-transparent">Leaderboard</h1>

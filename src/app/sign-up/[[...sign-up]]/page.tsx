@@ -7,7 +7,7 @@ export default function SignUpPage() {
         <div className="text-center">
           <h1 className="text-3xl font-bold tracking-tight">Get started</h1>
           <p className="mt-2 text-muted-foreground">
-            Create your TaskChain account and start earning rewards
+            Sign up with GitHub to track contributions and earn rewards
           </p>
         </div>
         <SignUp
@@ -20,6 +20,8 @@ export default function SignUpPage() {
           routing="path"
           path="/sign-up"
           signInUrl="/sign-in"
+          forceRedirectUrl="/dashboard"
+          fallbackRedirectUrl="/dashboard"
         />
       </div>
     </div>

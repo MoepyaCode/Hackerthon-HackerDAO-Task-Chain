@@ -1,0 +1,64 @@
+{
+  "stats": {
+    "totalContributors": 48,
+    "totalPoints": 28450,
+    "totalContributions": 2847
+  },
+  "leaderboardData": [
+    {
+      "rank": 1,
+      "userId": "1",
+      "githubUsername": "alice-dev",
+      "totalPoints": 1250,
+      "issuesClosed": 45,
+      "prsOpened": 32,
+      "prsMerged": 28,
+      "commitsPushed": 156,
+      "change": 2
+    },
+    {
+      "rank": 2,
+      "userId": "2",
+      "githubUsername": "bob-coder",
+      "totalPoints": 980,
+      "issuesClosed": 38,
+      "prsOpened": 25,
+      "prsMerged": 22,
+      "commitsPushed": 142,
+      "change": -1
+    },
+    {
+      "rank": 3,
+      "userId": "3",
+      "githubUsername": "charlie-ops",
+      "totalPoints": 850,
+      "issuesClosed": 32,
+      "prsOpened": 28,
+      "prsMerged": 24,
+      "commitsPushed": 98,
+      "change": 1
+    },
+    {
+      "rank": 4,
+      "userId": "4",
+      "githubUsername": "diana-eng",
+      "totalPoints": 720,
+      "issuesClosed": 28,
+      "prsOpened": 22,
+      "prsMerged": 19,
+      "commitsPushed": 87,
+      "change": 0
+    },
+    {
+      "rank": 5,
+      "userId": "5",
+      "githubUsername": "evan-fullstack",
+      "totalPoints": 650,
+      "issuesClosed": 25,
+      "prsOpened": 20,
+      "prsMerged": 17,
+      "commitsPushed": 76,
+      "change": -2
+    }
+  ]
+}

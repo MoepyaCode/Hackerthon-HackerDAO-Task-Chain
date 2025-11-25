@@ -1,6 +1,6 @@
-'use client';
-
-import { Header, BottomNav } from '@/components/layout';
+import { auth, currentUser } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
+import { Header, BottomNav, Breadcrumbs } from '@/components/layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -16,8 +16,68 @@ import {
 } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrophy, faFire, faRocket, faAward, faBullseye } from '@fortawesome/free-solid-svg-icons';
+import { getUserGitHubOrganizations } from '@/services/github-org.service';
+import { hasGitHubConnected } from '@/lib/github';
+import { ConnectableGitHubOrgCard } from '@/components/organization/connectable-github-org-card';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { clerkClient } from '@clerk/nextjs/server';
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const { userId, orgId } = await auth();
+  const user = await currentUser();
+
+  if (!userId) {
+    redirect('/sign-in');
+  }
+
+  // Check if GitHub is connected and fetch organizations
+  let githubConnected = false;
+  let githubOrgs: Awaited<ReturnType<typeof getUserGitHubOrganizations>> = [];
+  
+  try {
+    githubConnected = await hasGitHubConnected();
+    
+    if (githubConnected) {
+      try {
+        githubOrgs = await getUserGitHubOrganizations();
+      } catch (error) {
+        console.error('Error fetching GitHub organizations:', error);
+        // If token is invalid, treat as not connected
+        githubConnected = false;
+      }
+    }
+  } catch (error) {
+    console.error('Error checking GitHub connection:', error);
+    // Silently fail and show as not connected
+    githubConnected = false;
+  }
+
+  // Get user's Clerk organizations to check which GitHub orgs are already connected
+  const userMemberships = await (await clerkClient()).users.getOrganizationMembershipList({
+    userId: userId,
+  });
+
+  // Get full organization details for each membership
+  const clerkOrgs = await Promise.all(
+    userMemberships.data.map(async (membership) => {
+      return await (await clerkClient()).organizations.getOrganization({
+        organizationId: membership.organization.id,
+      });
+    })
+  );
+
+  // Map GitHub orgs to their connection status
+  const githubOrgsWithStatus = githubOrgs.map((githubOrg) => {
+    const connectedClerkOrg = clerkOrgs.find(
+      (clerkOrg) => clerkOrg.publicMetadata?.githubOrg === githubOrg.login
+    );
+    return {
+      ...githubOrg,
+      isConnected: !!connectedClerkOrg,
+      clerkOrgSlug: connectedClerkOrg?.slug,
+    };
+  });
 
   // Mock data - will be replaced with real data from API
   const stats = {
@@ -100,6 +160,52 @@ export default function DashboardPage() {
             Track your contributions and performance
           </p>
         </div>
+
+        {/* GitHub Connection Status */}
+        {!githubConnected && (
+          <Card className="bg-yellow-500/10 border-yellow-500/30">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-4">
+                <AlertCircle className="h-8 w-8 text-yellow-400" />
+                <div className="flex-1">
+                  <h3 className="font-semibold text-yellow-400 mb-1">Connect GitHub Account</h3>
+                  <p className="text-sm text-slate-300">
+                    Connect your GitHub account to start tracking contributions and accessing repositories.
+                  </p>
+                </div>
+                <Link href="/sign-in">
+                  <Button className="bg-yellow-500 hover:bg-yellow-600 text-slate-900">
+                    Connect GitHub
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* GitHub Organizations */}
+        {githubConnected && githubOrgsWithStatus.length > 0 && (
+          <Card className="bg-slate-900/50 border-sky-500/20">
+            <CardHeader>
+              <CardTitle className="text-slate-100">Your GitHub Organizations</CardTitle>
+              <CardDescription className="text-slate-400">
+                Connect your GitHub organizations to start tracking contributions
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {githubOrgsWithStatus.map((org) => (
+                  <ConnectableGitHubOrgCard
+                    key={org.id}
+                    org={org}
+                    isConnected={org.isConnected}
+                    clerkOrgSlug={org.clerkOrgSlug}
+                  />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Stats Grid */}
           <div className="grid gap-3 grid-cols-2">

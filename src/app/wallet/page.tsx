@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Header, BottomNav } from '@/components/layout';
+import { useState, useEffect } from 'react';
+import { Header, BottomNav, Breadcrumbs } from '@/components/layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -24,79 +24,97 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBullseye, faRocket, faFire, faCertificate } from '@fortawesome/free-solid-svg-icons';export default function WalletPage() {
+import { faBullseye, faRocket, faFire, faCertificate } from '@fortawesome/free-solid-svg-icons';
+import { RewardService } from '@/services/reward.service';
+
+interface WalletData {
+    address: string;
+    balance: string;
+    totalEarned: string;
+    pendingRewards: string;
+}
+
+interface Transaction {
+    id: string;
+    type: string;
+    amount: string;
+    currency: string;
+    status: string;
+    txHash: string | null;
+    date: string;
+    description: string;
+}
+
+interface BadgeData {
+    id: string;
+    name: string;
+    description: string;
+    imageUrl: string;
+    earnedAt: string;
+    isMinted: boolean;
+    nftTokenId: string | null;
+}
+
+interface WalletPageData {
+    walletData: WalletData;
+    transactions: Transaction[];
+    badges: BadgeData[];
+}
+
+const iconMap: Record<string, any> = {
+    bullseye: faBullseye,
+    rocket: faRocket,
+    fire: faFire,
+    certificate: faCertificate,
+};
+
+export default function WalletPage() {
     const [copied, setCopied] = useState(false);
+    const [data, setData] = useState<WalletPageData | null>(null);
+    const [loading, setLoading] = useState(true);
 
-    // Mock data - will be replaced with real data from API
-    const walletData = {
-        address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb',
-        balance: '125.50',
-        totalEarned: '325.75',
-        pendingRewards: '45.25',
-    };
+    useEffect(() => {
+        async function loadData() {
+            try {
+                // Using service layer to load data
+                const walletData = await RewardService.getWalletData('current-user');
+                setData(walletData);
+                setLoading(false);
+            } catch (err) {
+                console.error('Failed to load wallet data:', err);
+                setLoading(false);
+            }
+        }
+        loadData();
+    }, []);
 
-    const transactions = [
-        {
-            id: '1',
-            type: 'REWARD',
-            amount: '50.00',
-            currency: 'CELO',
-            status: 'COMPLETED',
-            txHash: '0xabc123...def456',
-            date: '2024-11-20',
-            description: 'Weekly reward - Week 47',
-        },
-        {
-            id: '2',
-            type: 'REWARD',
-            amount: '35.25',
-            currency: 'CELO',
-            status: 'COMPLETED',
-            txHash: '0x789xyz...456abc',
-            date: '2024-11-13',
-            description: 'Weekly reward - Week 46',
-        },
-        {
-            id: '3',
-            type: 'REWARD',
-            amount: '45.25',
-            currency: 'CELO',
-            status: 'PROCESSING',
-            txHash: null,
-            date: '2024-11-23',
-            description: 'Weekly reward - Week 48',
-        },
-    ];
+    if (loading) {
+        return (
+            <div className="flex flex-col min-h-screen bg-slate-950">
+                <Header />
+                <Breadcrumbs />
+                <main className="flex-1 p-4">
+                    <p className="text-slate-400">Loading...</p>
+                </main>
+                <BottomNav />
+            </div>
+        );
+    }
 
-    const badges = [
-        {
-            id: '1',
-            name: 'First Contribution',
-            description: 'Made your first contribution',
-            imageUrl: faBullseye,
-            earnedAt: '2024-11-01',
-            isMinted: true,
-            nftTokenId: '42',
-        },
-        {
-            id: '2',
-            name: '10 PRs Merged',
-            description: 'Successfully merged 10 pull requests',
-            imageUrl: faRocket,
-            earnedAt: '2024-11-10',
-            isMinted: true,
-            nftTokenId: '87',
-        },
-        {
-            id: '3',
-            name: '100 Points',
-            description: 'Earned 100 total points',
-            imageUrl: faFire,
-            earnedAt: '2024-11-15',
-            isMinted: false,
-            nftTokenId: null,
-        },
-    ];
+    if (!data) {
+        return (
+            <div className="flex flex-col min-h-screen bg-slate-950">
+                <Header />
+                <Breadcrumbs />
+                <main className="flex-1 p-4">
+                    <p className="text-slate-400">Failed to load wallet data</p>
+                </main>
+                <BottomNav />
+            </div>
+        );
+    }
+
+    const { walletData, transactions, badges } = data;
 
     const copyAddress = () => {
         navigator.clipboard.writeText(walletData.address);
@@ -120,6 +138,7 @@ import { faBullseye, faRocket, faFire, faCertificate } from '@fortawesome/free-s
     return (
         <div className="flex flex-col min-h-screen bg-slate-950">
             <Header />
+            <Breadcrumbs />
             <main className="flex-1 p-4 space-y-4 pb-20">
                 <div className="space-y-1">
                     <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-slate-100 to-sky-400 bg-clip-text text-transparent">Wallet</h1>
@@ -304,7 +323,7 @@ import { faBullseye, faRocket, faFire, faCertificate } from '@fortawesome/free-s
                                             <CardHeader className="space-y-4">
                                                 <div className="flex items-center justify-between">
                                                     <div className="text-5xl text-sky-400 group-hover:text-sky-300 transition-colors drop-shadow-[0_0_15px_rgba(56,189,248,0.3)]">
-                                                        <FontAwesomeIcon icon={badge.imageUrl} />
+                                                        <FontAwesomeIcon icon={iconMap[badge.imageUrl] || faFire} />
                                                     </div>
                                                     {badge.isMinted ? (
                                                         <Badge variant="default" className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">

@@ -12,7 +12,7 @@ export interface LeaderboardEntry {
 }
 
 export interface LeaderboardFilters {
-  period: LeaderboardPeriod;
+  period?: LeaderboardPeriod;
   organizationId?: string;
   repositoryId?: string;
 }
