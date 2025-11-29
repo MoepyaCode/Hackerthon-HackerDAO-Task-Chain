@@ -1,5 +1,7 @@
 'use client';
 
+/* eslint-disable react-hooks/set-state-in-effect */
+
 import { useState, useLayoutEffect } from 'react';
 import Link from 'next/link';
 import { useUser } from '@clerk/nextjs';
@@ -13,7 +15,8 @@ export function HeroCTA() {
 
   useLayoutEffect(() => {
     setMounted(true);
-  }, []); // Empty dependency array is intentional for hydration
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+  }, []);
 
   if (!mounted) {
     return (
@@ -69,6 +72,7 @@ export function BottomCTA() {
 
   useLayoutEffect(() => {
     setMounted(true);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
   }, []);
 
   if (!mounted) {

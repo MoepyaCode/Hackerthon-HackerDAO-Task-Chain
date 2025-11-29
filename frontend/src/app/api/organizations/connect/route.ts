@@ -1,72 +1,79 @@
-import { auth, clerkClient } from '@clerk/nextjs/server';
-import { NextResponse } from 'next/server';
+import { auth, clerkClient } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  try {
-    const { userId } = await auth();
-    
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+	try {
+		const { userId } = await auth();
 
-    const { githubOrgLogin, githubOrgName } = await req.json();
+		if (!userId) {
+			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+		}
 
-    if (!githubOrgLogin || !githubOrgName) {
-      return NextResponse.json(
-        { error: 'GitHub organization login and name are required' },
-        { status: 400 }
-      );
-    }
+		const { githubOrgLogin, githubOrgName } = await req.json();
 
-    const client = await clerkClient();
+		if (!githubOrgLogin || !githubOrgName) {
+			return NextResponse.json(
+				{ error: "GitHub organization login and name are required" },
+				{ status: 400 },
+			);
+		}
 
-    // Create Clerk organization based on GitHub org
-    // Note: slug is optional - Clerk will auto-generate if slugs are enabled
-    const organization = await client.organizations.createOrganization({
-      name: githubOrgName,
-      createdBy: userId,
-      publicMetadata: {
-        githubOrg: githubOrgLogin,
-        connectedAt: new Date().toISOString(),
-      },
-    });
+		const client = await clerkClient();
 
-    return NextResponse.json({
-      success: true,
-      organization: {
-        id: organization.id,
-        slug: organization.slug || organization.id,
-        name: organization.name,
-      },
-    });
-  } catch (error: unknown) {
-    const err = error as Error;
-    console.error('Error connecting GitHub organization:', err);
-    console.error('Error details:', {
-      message: err?.message,
-      errors: (err as any)?.errors,
-      clerkError: (err as any)?.clerkError,
-      status: (err as any)?.status,
-    });
-    
-    // Handle specific errors
-    if (error?.message?.includes('already exists') || error?.errors?.[0]?.message?.includes('already taken')) {
-      return NextResponse.json(
-        { error: 'This organization is already connected to TaskChain' },
-        { status: 409 }
-      );
-    }
+		// Create Clerk organization based on GitHub org
+		// Note: slug is optional - Clerk will auto-generate if slugs are enabled
+		const organization = await client.organizations.createOrganization({
+			name: githubOrgName,
+			createdBy: userId,
+			publicMetadata: {
+				githubOrg: githubOrgLogin,
+				connectedAt: new Date().toISOString(),
+			},
+		});
 
-    if (error?.message?.includes('Organizations feature') || error?.status === 403) {
-      return NextResponse.json(
-        { error: 'Organizations feature not enabled. Please enable it in your Clerk dashboard.' },
-        { status: 403 }
-      );
-    }
+		return NextResponse.json({
+			success: true,
+			organization: {
+				id: organization.id,
+				slug: organization.slug || organization.id,
+				name: organization.name,
+			},
+		});
+	} catch (error: unknown) {
+		const err = error as Error;
+		console.error("Error details:", {
+			message: err?.message,
+			errors: (error as { errors?: unknown })?.errors,
+			clerkError: (error as { clerkError?: unknown })?.clerkError,
+			status: (error as { status?: unknown })?.status,
+		}); // Handle specific errors
+		if (
+			err?.message?.includes("already exists") ||
+			(error as { errors?: { message?: string }[] })?.errors?.[0]?.message?.includes(
+				"already taken",
+			)
+		) {
+			return NextResponse.json(
+				{ error: "This organization is already connected to TaskChain" },
+				{ status: 409 },
+			);
+		}
 
-    return NextResponse.json(
-      { error: error?.message || 'Failed to connect organization' },
-      { status: 500 }
-    );
-  }
+		if (
+			err?.message?.includes("Organizations feature") ||
+			(error as { status?: number })?.status === 403
+		) {
+			return NextResponse.json(
+				{
+					error: "Organizations feature not enabled. Please enable it in your Clerk dashboard.",
+				},
+				{ status: 403 },
+			);
+		}
+
+		return NextResponse.json(
+			{ error: err?.message || "Failed to connect organization" },
+			{ status: 500 },
+		);
+	}
 }
