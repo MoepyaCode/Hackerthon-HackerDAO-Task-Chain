@@ -24,7 +24,7 @@ export function useLeaderboard(filters: LeaderboardFilters) {
     };
 
     fetchLeaderboard();
-  }, [filters.period, filters.organizationId, filters.repositoryId]);
+  }, [filters]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return { data, loading, error, refetch: () => {} };
 }

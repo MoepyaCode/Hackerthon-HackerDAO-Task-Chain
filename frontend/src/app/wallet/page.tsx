@@ -61,7 +61,9 @@ interface WalletPageData {
     badges: BadgeData[];
 }
 
-const iconMap: Record<string, any> = {
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+
+const iconMap: Record<string, IconDefinition> = {
     bullseye: faBullseye,
     rocket: faRocket,
     fire: faFire,

@@ -1,8 +1,5 @@
 import { createGitHubClient } from '@/lib/github-client';
 import {
-  GitHubPullRequest,
-  GitHubIssue,
-  GitHubCommit,
   RepositoryContributions,
   ContributionStats,
 } from '@/@types/github';

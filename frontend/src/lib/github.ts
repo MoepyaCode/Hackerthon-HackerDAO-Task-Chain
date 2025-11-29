@@ -28,7 +28,7 @@ export async function getGitHubToken(): Promise<string> {
     }
 
     return token;
-  } catch (error) {
+  } catch {
     throw new Error('Failed to retrieve GitHub token. Please reconnect your GitHub account.');
   }
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useLayoutEffect } from 'react';
 import Link from 'next/link';
 import { useUser } from '@clerk/nextjs';
 import { Button } from '@/components/ui/button';
@@ -11,9 +11,9 @@ export function HeroCTA() {
   const { isSignedIn } = useUser();
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setMounted(true);
-  }, []);
+  }, []); // Empty dependency array is intentional for hydration
 
   if (!mounted) {
     return (
@@ -67,7 +67,7 @@ export function BottomCTA() {
   const { isSignedIn } = useUser();
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setMounted(true);
   }, []);
 

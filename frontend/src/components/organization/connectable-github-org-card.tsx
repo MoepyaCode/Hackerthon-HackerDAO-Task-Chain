@@ -52,8 +52,8 @@ export function ConnectableGitHubOrgCard({ org, isConnected, clerkOrgSlug }: Con
       // Redirect to the newly connected organization
       router.push(`/organization/${data.organization.slug}`);
       router.refresh();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
       setIsConnecting(false);
     }
   };

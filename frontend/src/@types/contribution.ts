@@ -10,11 +10,16 @@ export interface Contribution {
 }
 
 export interface ContributionMetadata {
-  githubId?: string;
+  githubId?: string | number;
   title?: string;
   url?: string;
   sha?: string;
-  [key: string]: any;
+  state?: string;
+  merged?: boolean;
+  additions?: number;
+  deletions?: number;
+  changedFiles?: number;
+  [key: string]: string | number | boolean | undefined;
 }
 
 export enum ContributionType {

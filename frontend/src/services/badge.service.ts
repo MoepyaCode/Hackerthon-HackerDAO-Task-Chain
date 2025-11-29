@@ -2,7 +2,7 @@ import type { UserBadge, Badge } from '@/@types';
 
 // Mock API service - replace with actual API calls later
 export class BadgeService {
-  static async getUserBadges(userId: string): Promise<UserBadge[]> {
+  static async getUserBadges(_userId: string): Promise<UserBadge[]> {
     // TODO: Implement actual API call
     return [];
   }
@@ -12,12 +12,12 @@ export class BadgeService {
     return [];
   }
 
-  static async mintBadge(userBadgeId: string): Promise<UserBadge> {
+  static async mintBadge(_userBadgeId: string): Promise<UserBadge> {
     // TODO: Implement actual API call
     throw new Error('Not implemented');
   }
 
-  static async checkEligibleBadges(userId: string): Promise<Badge[]> {
+  static async checkEligibleBadges(_userId: string): Promise<Badge[]> {
     // TODO: Implement actual API call
     return [];
   }
