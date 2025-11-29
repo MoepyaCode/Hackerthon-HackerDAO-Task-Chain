@@ -39,13 +39,14 @@ export async function POST(req: Request) {
         name: organization.name,
       },
     });
-  } catch (error: any) {
-    console.error('Error connecting GitHub organization:', error);
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error('Error connecting GitHub organization:', err);
     console.error('Error details:', {
-      message: error?.message,
-      errors: error?.errors,
-      clerkError: error?.clerkError,
-      status: error?.status,
+      message: err?.message,
+      errors: (err as any)?.errors,
+      clerkError: (err as any)?.clerkError,
+      status: (err as any)?.status,
     });
     
     // Handle specific errors

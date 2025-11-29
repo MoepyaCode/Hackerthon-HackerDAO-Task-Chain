@@ -15,13 +15,13 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import {
-  Wallet,
-  Coins,
-  Award,
-  TrendingUp,
-  ExternalLink,
-  Copy,
-  CheckCircle2,
+    Wallet,
+    Coins,
+    Award,
+    TrendingUp,
+    ExternalLink,
+    Copy,
+    CheckCircle2,
 } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBullseye, faRocket, faFire, faCertificate } from '@fortawesome/free-solid-svg-icons';

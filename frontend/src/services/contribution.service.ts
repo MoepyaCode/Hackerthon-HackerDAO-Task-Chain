@@ -1,4 +1,10 @@
-import type { Contribution, ContributionStats, ContributionHistory, ContributionMetadata, ContributionType } from "@/@types";
+import type {
+	Contribution,
+	ContributionStats,
+	ContributionHistory,
+	ContributionMetadata,
+	ContributionType,
+} from "@/@types";
 import { prisma } from "@/lib/prisma";
 
 // Service for managing contributions - combines on-chain data with DB caching
@@ -11,9 +17,9 @@ export class ContributionService {
 				include: {
 					repo: {
 						include: {
-							organization: true
-						}
-					}
+							organization: true,
+						},
+					},
 				},
 				orderBy: { createdAt: "desc" },
 				take: limit,
@@ -22,8 +28,8 @@ export class ContributionService {
 			return contributions.map((c) => ({
 				id: c.id,
 				userId: c.userId,
-				organizationId: c.repo?.organizationId || '',
-				repositoryId: c.repoId || '',
+				organizationId: c.repo?.organizationId || "",
+				repositoryId: c.repoId || "",
 				type: c.contributionType as ContributionType,
 				points: c.points,
 				metadata: c.metadata as ContributionMetadata,
@@ -113,7 +119,7 @@ export class ContributionService {
 				}
 				acc[date].contributions.push({
 					id: c.id,
-					type: c.contributionType as any,
+					type: c.contributionType as ContributionType,
 					points: c.points,
 					timestamp: c.createdAt,
 				});
