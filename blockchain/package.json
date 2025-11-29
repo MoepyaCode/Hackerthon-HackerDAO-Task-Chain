@@ -1,0 +1,21 @@
+{
+ "name": "taskchain-blockchain",
+ "version": "0.1.0",
+ "description": "Smart contracts for TaskChain on Celo",
+ "scripts": {
+  "compile": "npx hardhat compile",
+  "test": "npx hardhat test",
+  "deploy:alfajores": "npx hardhat run scripts/deploy.js --network alfajores",
+  "deploy:celo": "npx hardhat run scripts/deploy.js --network celo"
+ },
+ "devDependencies": {
+  "@nomiclabs/hardhat-ethers": "^2.2.3",
+  "@nomiclabs/hardhat-waffle": "^2.0.6",
+  "@openzeppelin/contracts": "^4.9.0",
+  "@celo/contractkit": "^3.2.0",
+  "chai": "^4.3.7",
+  "ethereum-waffle": "^4.0.10",
+  "ethers": "^5.7.2",
+  "hardhat": "^2.14.0"
+ }
+}
