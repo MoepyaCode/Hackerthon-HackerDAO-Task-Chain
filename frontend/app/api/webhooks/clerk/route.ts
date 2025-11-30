@@ -3,6 +3,10 @@ import { headers } from "next/headers";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 
+export async function GET() {
+	return new Response("Clerk Webhook Endpoint", { status: 200 });
+}
+
 export async function POST(req: Request) {
 	const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
 
