@@ -248,6 +248,17 @@ export default async function DashboardPage() {
           </Card>
         )}
 
+        {/* Repositories Link */}
+        {githubConnected && (
+          <div className="flex justify-end">
+            <Link href="/dashboard/settings/repos">
+              <Button variant="outline" className="border-sky-500/50 text-sky-400 hover:bg-sky-500/10">
+                Manage Repositories
+              </Button>
+            </Link>
+          </div>
+        )}
+
         {/* Stats Grid */}
         <div className="grid gap-3 grid-cols-2">
           <Card className="bg-slate-900/50 backdrop-blur-sm border-sky-500/20 hover:border-sky-400/50 transition-all duration-300 group">
