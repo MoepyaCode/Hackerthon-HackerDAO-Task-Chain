@@ -1,4 +1,4 @@
-import type { User, UserProfile, ContributionType, ContributionMetadata } from "@/@types";
+import type { User, UserProfile } from "@/@types";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 
@@ -67,12 +67,16 @@ export class UserService {
 						metadata: c.metadata,
 						onChainTxHash: c.onChainTxHash,
 						createdAt: c.createdAt,
-						repo: c.repo ? {
-							fullName: c.repo.fullName,
-							organization: c.repo.organization ? {
-								name: c.repo.organization.name
-							} : undefined
-						} : undefined
+						repo: c.repo
+							? {
+									fullName: c.repo.fullName,
+									organization: c.repo.organization
+										? {
+												name: c.repo.organization.name,
+										  }
+										: undefined,
+							  }
+							: undefined,
 					})) || [],
 				rewards:
 					user.rewards?.map((r) => ({
@@ -173,12 +177,23 @@ export class UserService {
 					user.contributions?.map((c) => ({
 						id: c.id,
 						userId: c.userId,
-						organizationId: c.repo?.organizationId || "",
-						repositoryId: c.repoId || "",
-						type: c.contributionType as ContributionType,
+						repoId: c.repoId,
+						contributionType: c.contributionType,
+						externalId: c.externalId,
 						points: c.points,
-						metadata: c.metadata as ContributionMetadata,
+						metadata: c.metadata,
+						onChainTxHash: c.onChainTxHash,
 						createdAt: c.createdAt,
+						repo: c.repo
+							? {
+									fullName: c.repo.fullName,
+									organization: c.repo.organization
+										? {
+												name: c.repo.organization.name,
+										  }
+										: undefined,
+							  }
+							: undefined,
 					})) || [],
 				rewards:
 					user.rewards?.map((r) => ({
