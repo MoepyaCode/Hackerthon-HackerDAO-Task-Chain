@@ -5,6 +5,7 @@ export interface Contribution {
 	contributionType: string; // Was type: ContributionType
 	externalId: string;
 	points: number;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	metadata: any; // Was ContributionMetadata
 	onChainTxHash: string | null;
 	createdAt: Date;
