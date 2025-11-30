@@ -17,7 +17,7 @@ export class LeaderboardService {
 			});
 
 			if (cached && cached.expiresAt > new Date()) {
-				const cachedData = cached.data as LeaderboardData;
+				const cachedData = JSON.parse(cached.data as string) as LeaderboardData;
 				return cachedData.leaderboardData || [];
 			}
 
@@ -69,7 +69,7 @@ export class LeaderboardService {
 			});
 
 			if (cached && cached.expiresAt > new Date()) {
-				const cachedData = cached.data as LeaderboardData;
+				const cachedData = JSON.parse(cached.data as string) as LeaderboardData;
 				return cachedData.stats;
 			}
 

@@ -11,59 +11,313 @@ declare global {
 	}
 }
 
-// Contract ABIs
-export const PERFORMANCE_TRACKER_ABI = [
-	"function logContribution(address user, string memory contributionType, uint256 points) external",
-	"function getUserPoints(address user) external view returns (uint256)",
-	"function getUserContributions(address user) external view returns (tuple(address user, string contributionType, uint256 points, uint256 timestamp)[] memory)",
-	"function getLeaderboard() external view returns (address[] memory, uint256[] memory)",
-	"event ContributionLogged(address indexed user, string contributionType, uint256 points, uint256 timestamp)",
-];
-
-export const REWARD_POOL_ABI = [
-	"function addReward(address user, uint256 amount) external",
-	"function claimReward() external",
-	"function addPrizePool(uint256 amount) external",
-	"function getUserRewards(address user) external view returns (uint256)",
-	"function getPrizePool() external view returns (uint256)",
-	"event RewardAdded(address indexed user, uint256 amount)",
-	"event RewardClaimed(address indexed user, uint256 amount)",
-];
-
-export const BADGE_NFT_ABI = [
-	"function mintBadge(address to, string memory badgeType) external returns (uint256)",
-	"function tokenURI(uint256 tokenId) external view returns (string memory)",
-	"function getBadgeType(uint256 tokenId) external view returns (string memory)",
-	"function balanceOf(address owner) external view returns (uint256)",
-	"function tokenOfOwnerByIndex(address owner, uint256 index) external view returns (uint256)",
-	"event BadgeMinted(address indexed to, uint256 indexed tokenId, string badgeType)",
-];
-
-// Contract addresses (will be populated after deployment)
+// Contract addresses from deployment
 export const CONTRACT_ADDRESSES = {
-	alfajores: {
-		performanceTracker: "",
-		rewardPool: "",
-		badgeNFT: "",
-		celoToken: "0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9",
-	},
-	celoSepolia: {
-		performanceTracker: "",
-		rewardPool: "",
-		badgeNFT: "",
-		celoToken: "0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9", // Same as Alfajores for testnet
-	},
-	celo: {
-		performanceTracker: "",
-		rewardPool: "",
-		badgeNFT: "",
-		celoToken: "0x471EcE3750Da237f93B8E339c536989b8978a438",
-	},
+	performanceTracker: "0x5FbDB2315678afecb367f032d93F642f64180aa3" as `0x${string}`,
+	rewardPool: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512" as `0x${string}`,
+	badgeNFT: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0" as `0x${string}`,
+	celoToken: "0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9" as `0x${string}`,
 };
 
-// Contract interaction utilities
+// Updated ABIs to match deployed contracts
+export const PERFORMANCE_TRACKER_ABI = [
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "user",
+				type: "address",
+			},
+			{
+				internalType: "string",
+				name: "contributionType",
+				type: "string",
+			},
+			{
+				internalType: "uint256",
+				name: "points",
+				type: "uint256",
+			},
+		],
+		name: "logContribution",
+		outputs: [],
+		stateMutability: "nonpayable",
+		type: "function",
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "user",
+				type: "address",
+			},
+		],
+		name: "getUserPoints",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256",
+			},
+		],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "user",
+				type: "address",
+			},
+		],
+		name: "getUserContributions",
+		outputs: [
+			{
+				components: [
+					{
+						internalType: "address",
+						name: "user",
+						type: "address",
+					},
+					{
+						internalType: "string",
+						name: "contributionType",
+						type: "string",
+					},
+					{
+						internalType: "uint256",
+						name: "points",
+						type: "uint256",
+					},
+					{
+						internalType: "uint256",
+						name: "timestamp",
+						type: "uint256",
+					},
+				],
+				internalType: "struct PerformanceTracker.Contribution[]",
+				name: "",
+				type: "tuple[]",
+			},
+		],
+		stateMutability: "view",
+		type: "function",
+	},
+] as const;
+
+export const REWARD_POOL_ABI = [
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "_rewardToken",
+				type: "address",
+			},
+		],
+		stateMutability: "nonpayable",
+		type: "constructor",
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "user",
+				type: "address",
+			},
+			{
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256",
+			},
+		],
+		name: "addReward",
+		outputs: [],
+		stateMutability: "nonpayable",
+		type: "function",
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256",
+			},
+		],
+		name: "addPrizePool",
+		outputs: [],
+		stateMutability: "nonpayable",
+		type: "function",
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "rewardIndex",
+				type: "uint256",
+			},
+		],
+		name: "claimReward",
+		outputs: [],
+		stateMutability: "nonpayable",
+		type: "function",
+	},
+	{
+		inputs: [],
+		name: "getContractBalance",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256",
+			},
+		],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "user",
+				type: "address",
+			},
+		],
+		name: "getUserRewards",
+		outputs: [
+			{
+				components: [
+					{
+						internalType: "address",
+						name: "user",
+						type: "address",
+					},
+					{
+						internalType: "uint256",
+						name: "amount",
+						type: "uint256",
+					},
+					{
+						internalType: "uint256",
+						name: "timestamp",
+						type: "uint256",
+					},
+					{
+						internalType: "bool",
+						name: "claimed",
+						type: "bool",
+					},
+				],
+				internalType: "struct RewardPool.Reward[]",
+				name: "",
+				type: "tuple[]",
+			},
+		],
+		stateMutability: "view",
+		type: "function",
+	},
+] as const;
+
+export const BADGE_NFT_ABI = [
+	{
+		inputs: [],
+		stateMutability: "nonpayable",
+		type: "constructor",
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "to",
+				type: "address",
+			},
+			{
+				internalType: "string",
+				name: "name",
+				type: "string",
+			},
+			{
+				internalType: "string",
+				name: "description",
+				type: "string",
+			},
+			{
+				internalType: "string",
+				name: "milestone",
+				type: "string",
+			},
+		],
+		name: "mintBadge",
+		outputs: [],
+		stateMutability: "nonpayable",
+		type: "function",
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "tokenId",
+				type: "uint256",
+			},
+		],
+		name: "getBadge",
+		outputs: [
+			{
+				components: [
+					{
+						internalType: "string",
+						name: "name",
+						type: "string",
+					},
+					{
+						internalType: "string",
+						name: "description",
+						type: "string",
+					},
+					{
+						internalType: "string",
+						name: "milestone",
+						type: "string",
+					},
+					{
+						internalType: "uint256",
+						name: "earnedAt",
+						type: "uint256",
+					},
+				],
+				internalType: "struct BadgeNFT.Badge",
+				name: "",
+				type: "tuple",
+			},
+		],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "owner",
+				type: "address",
+			},
+		],
+		name: "balanceOf",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256",
+			},
+		],
+		stateMutability: "view",
+		type: "function",
+	},
+] as const;
 export class ContractService {
-	private provider: ethers.providers.Web3Provider | ethers.providers.JsonRpcProvider;
+	private provider:
+		| ethers.providers.Web3Provider
+		| ethers.providers.JsonRpcProvider
+		| ethers.providers.BaseProvider;
 	private signer?: ethers.Signer;
 
 	constructor(
@@ -85,26 +339,26 @@ export class ContractService {
 	}
 
 	// Performance Tracker Contract
-	getPerformanceTracker(network: "alfajores" | "celoSepolia" | "celo" = "alfajores") {
-		const address = CONTRACT_ADDRESSES[network].performanceTracker;
+	getPerformanceTracker() {
+		const address = CONTRACT_ADDRESSES.performanceTracker;
 		return new ethers.Contract(address, PERFORMANCE_TRACKER_ABI, this.signer || this.provider);
 	}
 
 	// Reward Pool Contract
-	getRewardPool(network: "alfajores" | "celoSepolia" | "celo" = "alfajores") {
-		const address = CONTRACT_ADDRESSES[network].rewardPool;
+	getRewardPool() {
+		const address = CONTRACT_ADDRESSES.rewardPool;
 		return new ethers.Contract(address, REWARD_POOL_ABI, this.signer || this.provider);
 	}
 
 	// Badge NFT Contract
-	getBadgeNFT(network: "alfajores" | "celoSepolia" | "celo" = "alfajores") {
-		const address = CONTRACT_ADDRESSES[network].badgeNFT;
+	getBadgeNFT() {
+		const address = CONTRACT_ADDRESSES.badgeNFT;
 		return new ethers.Contract(address, BADGE_NFT_ABI, this.signer || this.provider);
 	}
 
 	// CELO Token Contract
-	getCeloToken(network: "alfajores" | "celoSepolia" | "celo" = "alfajores") {
-		const address = CONTRACT_ADDRESSES[network].celoToken;
+	getCeloToken() {
+		const address = CONTRACT_ADDRESSES.celoToken;
 		const ERC20_ABI = [
 			"function balanceOf(address owner) view returns (uint256)",
 			"function transfer(address to, uint256 amount) returns (bool)",

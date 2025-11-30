@@ -84,6 +84,10 @@ export class ContributionService {
 			return {
 				totalPoints,
 				totalContributions,
+				issuesClosed: byType.ISSUE_CLOSED || 0,
+				prsOpened: byType.PR_OPENED || 0,
+				prsMerged: byType.PR_MERGED || 0,
+				commitsPushed: byType.COMMIT_PUSHED || 0,
 				contributionsByType: byType,
 				lastUpdated: new Date(),
 			};

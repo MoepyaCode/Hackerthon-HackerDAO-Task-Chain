@@ -36,10 +36,17 @@ export interface ContributionStats {
 	prsMerged: number;
 	commitsPushed: number;
 	totalPoints: number;
+	contributionsByType: Record<string, number>;
+	lastUpdated: Date;
 }
 
 export interface ContributionHistory {
 	date: string;
-	contributions: number;
-	points: number;
+	contributions: Array<{
+		id: string;
+		type: ContributionType;
+		points: number;
+		timestamp: Date;
+	}>;
+	totalPoints: number;
 }

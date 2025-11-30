@@ -1,4 +1,4 @@
-import type { User, UserProfile } from "@/@types";
+import type { User, UserProfile, ContributionType, ContributionMetadata } from "@/@types";
 import { prisma } from "@/lib/prisma";
 
 // Service for managing user profiles and wallet linking
@@ -12,6 +12,18 @@ export class UserService {
 		try {
 			const user = await prisma.user.findUnique({
 				where: { clerkId: userId },
+				include: {
+					contributions: {
+						include: {
+							repo: {
+								include: {
+									organization: true,
+								},
+							},
+						},
+					},
+					rewards: true,
+				},
 			});
 
 			if (!user) return null;
@@ -23,6 +35,27 @@ export class UserService {
 				githubUsername: user.githubUsername || undefined,
 				createdAt: user.createdAt,
 				updatedAt: user.updatedAt,
+				contributions:
+					user.contributions?.map((c) => ({
+						id: c.id,
+						userId: c.userId,
+						organizationId: c.repo?.organizationId || "",
+						repositoryId: c.repoId || "",
+						type: c.contributionType as ContributionType,
+						points: c.points,
+						metadata: c.metadata as ContributionMetadata,
+						createdAt: c.createdAt,
+					})) || [],
+				rewards:
+					user.rewards?.map((r) => ({
+						id: r.id,
+						userId: r.userId,
+						amount: r.amount,
+						type: r.rewardType,
+						onChainTxHash: r.onChainTxHash,
+						claimedAt: r.claimedAt,
+						createdAt: r.createdAt,
+					})) || [],
 			};
 		} catch (error) {
 			console.error("Error getting user profile:", error);
@@ -87,6 +120,18 @@ export class UserService {
 					clerkId,
 					githubUsername,
 				},
+				include: {
+					contributions: {
+						include: {
+							repo: {
+								include: {
+									organization: true,
+								},
+							},
+						},
+					},
+					rewards: true,
+				},
 			});
 
 			return {
@@ -96,6 +141,27 @@ export class UserService {
 				githubUsername: user.githubUsername || undefined,
 				createdAt: user.createdAt,
 				updatedAt: user.updatedAt,
+				contributions:
+					user.contributions?.map((c) => ({
+						id: c.id,
+						userId: c.userId,
+						organizationId: c.repo?.organizationId || "",
+						repositoryId: c.repoId || "",
+						type: c.contributionType as ContributionType,
+						points: c.points,
+						metadata: c.metadata as ContributionMetadata,
+						createdAt: c.createdAt,
+					})) || [],
+				rewards:
+					user.rewards?.map((r) => ({
+						id: r.id,
+						userId: r.userId,
+						amount: r.amount,
+						type: r.rewardType,
+						onChainTxHash: r.onChainTxHash,
+						claimedAt: r.claimedAt,
+						createdAt: r.createdAt,
+					})) || [],
 			};
 		} catch (error) {
 			console.error("Error creating user profile:", error);

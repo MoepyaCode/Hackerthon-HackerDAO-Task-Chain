@@ -23,17 +23,19 @@ module.exports = {
 	networks: {
 		hardhat: {},
 		alfajores: {
-			url: "https://celo-alfajores.publicnode.com",
+			url: "https://alfajores-forno.celo-testnet.org",
 			accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+			chainId: 44787,
 		},
 		celoSepolia: {
-			url: "https://sepolia-forno.celo-testnet.org",
+			url: "https://celo-sepolia.publicnode.com",
 			accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-			chainId: 44787, // Same as Alfajores for now
+			chainId: 44787,
 		},
 		celo: {
 			url: "https://forno.celo.org",
 			accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+			chainId: 42220,
 		},
 	},
 };

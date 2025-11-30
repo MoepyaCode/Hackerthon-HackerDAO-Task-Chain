@@ -25,7 +25,8 @@ import {
 } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBullseye, faRocket, faFire, faCertificate } from '@fortawesome/free-solid-svg-icons';
-import { RewardService } from '@/services/reward.service';
+// import { RewardService } from '@/services/reward.service'; // Moved to dynamic import
+import { UserStats, LogContribution, ClaimRewards, MintBadge } from '@/components/contracts';
 
 interface WalletData {
     address: string;
@@ -78,6 +79,9 @@ export default function WalletPage() {
     useEffect(() => {
         async function loadData() {
             try {
+                // Dynamic import to avoid Prisma client initialization during SSR
+                const { RewardService } = await import('@/services/reward.service');
+
                 // Using service layer to load data
                 const walletData = await RewardService.getWalletData('current-user');
                 setData(walletData);
@@ -250,6 +254,7 @@ export default function WalletPage() {
                     <TabsList className="bg-slate-900/50 border border-sky-500/20">
                         <TabsTrigger value="transactions" className="data-[state=active]:bg-sky-500/20 data-[state=active]:text-sky-400">Transactions</TabsTrigger>
                         <TabsTrigger value="badges" className="data-[state=active]:bg-sky-500/20 data-[state=active]:text-sky-400">NFT Badges</TabsTrigger>
+                        <TabsTrigger value="blockchain" className="data-[state=active]:bg-sky-500/20 data-[state=active]:text-sky-400">Blockchain</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="transactions" className="space-y-4">
@@ -359,6 +364,90 @@ export default function WalletPage() {
                                             </CardContent>
                                         </Card>
                                     ))}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    <TabsContent value="blockchain" className="space-y-4">
+                        <Card className="bg-slate-900/50 backdrop-blur-sm border-sky-500/20">
+                            <CardHeader>
+                                <CardTitle className="text-slate-100">Blockchain Stats</CardTitle>
+                                <CardDescription className="text-slate-400">
+                                    Your on-chain performance and rewards
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <UserStats />
+                            </CardContent>
+                        </Card>
+
+                        <Card className="bg-slate-900/50 backdrop-blur-sm border-sky-500/20">
+                            <CardHeader>
+                                <CardTitle className="text-slate-100">Blockchain Actions</CardTitle>
+                                <CardDescription className="text-slate-400">
+                                    Interact with smart contracts on Celo
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
+                                    <div className="space-y-2">
+                                        <h4 className="text-sm font-medium text-slate-200">Log Contribution</h4>
+                                        <LogContribution
+                                            contributionType="code_commit"
+                                            points={10}
+                                            onSuccess={(txHash) => {
+                                                console.log('Contribution logged successfully:', txHash)
+                                                // Refresh data or show success message
+                                            }}
+                                            onError={(error) => {
+                                                console.error('Failed to log contribution:', error)
+                                                // Show error message
+                                            }}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <h4 className="text-sm font-medium text-slate-200">Claim Rewards</h4>
+                                        <ClaimRewards
+                                            onSuccess={(txHash) => {
+                                                console.log('Rewards claimed successfully:', txHash)
+                                                // Refresh data or show success message
+                                            }}
+                                            onError={(error) => {
+                                                console.error('Failed to claim rewards:', error)
+                                                // Show error message
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <h4 className="text-sm font-medium text-slate-200">Mint Badge</h4>
+                                    <div className="flex gap-2 flex-wrap">
+                                        <MintBadge
+                                            badgeId={1}
+                                            onSuccess={(txHash) => {
+                                                console.log('Badge minted successfully:', txHash)
+                                                // Refresh data or show success message
+                                            }}
+                                            onError={(error) => {
+                                                console.error('Failed to mint badge:', error)
+                                                // Show error message
+                                            }}
+                                        />
+                                        <MintBadge
+                                            badgeId={2}
+                                            onSuccess={(txHash) => {
+                                                console.log('Badge minted successfully:', txHash)
+                                                // Refresh data or show success message
+                                            }}
+                                            onError={(error) => {
+                                                console.error('Failed to mint badge:', error)
+                                                // Show error message
+                                            }}
+                                        />
+                                    </div>
                                 </div>
                             </CardContent>
                         </Card>

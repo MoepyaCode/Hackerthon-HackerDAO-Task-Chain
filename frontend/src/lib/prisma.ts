@@ -1,13 +1,16 @@
+import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
+import { withAccelerate } from "@prisma/extension-accelerate";
 
 const globalForPrisma = globalThis as unknown as {
-	prisma: PrismaClient | undefined;
+	prisma: ReturnType<typeof createPrismaClient> | undefined;
 };
 
-export const prisma =
-	globalForPrisma.prisma ??
-	new PrismaClient({
-		log: ["query"],
-	});
+const createPrismaClient = () => new PrismaClient().$extends(withAccelerate());
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+export const prisma = (() => {
+	if (!globalForPrisma.prisma) {
+		globalForPrisma.prisma = createPrismaClient();
+	}
+	return globalForPrisma.prisma;
+})();
