@@ -1,6 +1,9 @@
-import type { Reward, RewardPool, RewardTransaction } from "@/@types";
+import { type Reward, type RewardPool, type RewardTransaction, RewardPoolStatus } from "@/@types";
 import { prisma } from "@/lib/prisma";
 import { BadgeService } from "./badge.service";
+import { createPublicClient, http, formatEther } from "viem";
+import { celoSepolia } from "@/lib/wagmi";
+import { CONTRACT_ADDRESSES } from "@/lib/contracts";
 
 // Service for managing rewards - combines on-chain data with DB caching
 export class RewardService {
@@ -86,9 +89,39 @@ export class RewardService {
 	}
 
 	static async getRewardPool(_organizationId: string, _period: string): Promise<RewardPool> {
-		// TODO: Get from on-chain contract
-		// For now, return mock data
-		throw new Error("Reward pool not implemented yet");
+		try {
+			const publicClient = createPublicClient({
+				chain: celoSepolia,
+				transport: http(),
+			});
+
+			const balance = await publicClient.getBalance({
+				address: CONTRACT_ADDRESSES.rewardPool,
+			});
+
+			return {
+				id: "contract-pool",
+				organizationId: _organizationId || "global",
+				totalAmount: formatEther(balance),
+				currency: "CELO",
+				period: _period || "current",
+				distributedAmount: "0",
+				status: RewardPoolStatus.ACTIVE,
+				createdAt: new Date(),
+			};
+		} catch (error) {
+			console.error("Error fetching reward pool:", error);
+			return {
+				id: "error",
+				organizationId: _organizationId || "global",
+				totalAmount: "0",
+				currency: "CELO",
+				period: _period || "current",
+				distributedAmount: "0",
+				status: RewardPoolStatus.ACTIVE,
+				createdAt: new Date(),
+			};
+		}
 	}
 
 	// Get wallet data - combines on-chain balance with DB transactions (SERVER-SIDE ONLY)
@@ -101,6 +134,23 @@ export class RewardService {
 
 			if (!user) {
 				throw new Error("User not found");
+			}
+
+			let balance = "0.00";
+			if (user.walletAddress) {
+				try {
+					const publicClient = createPublicClient({
+						chain: celoSepolia,
+						transport: http(),
+					});
+
+					const balanceWei = await publicClient.getBalance({
+						address: user.walletAddress as `0x${string}`,
+					});
+					balance = formatEther(balanceWei);
+				} catch (error) {
+					console.error("Error fetching wallet balance:", error);
+				}
 			}
 
 			// Calculate rewards from DB
@@ -145,7 +195,7 @@ export class RewardService {
 			return {
 				walletData: {
 					address: user.walletAddress || "Not Connected",
-					balance: "0.00", // TODO: Fetch real balance from blockchain
+					balance,
 					totalEarned: totalEarned.toFixed(2),
 					pendingRewards: pendingRewards.toFixed(2),
 				},

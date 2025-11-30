@@ -39,8 +39,26 @@ export function ClaimRewards({ onSuccess, onError }: ClaimRewardsProps) {
  return (
   <Transaction
    chainId={11142220} // Celo Sepolia
-   onSuccess={(result) => {
+   onSuccess={async (result) => {
     console.log('Rewards claimed:', result)
+
+    try {
+     // Confirm claim in database
+     const response = await fetch('/api/rewards/confirm-claim', {
+      method: 'POST',
+      headers: {
+       'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ txHash: result.transactionHash }),
+     })
+
+     if (!response.ok) {
+      console.error('Failed to confirm claim in database')
+     }
+    } catch (error) {
+     console.error('Error confirming claim:', error)
+    }
+
     onSuccess?.(result.transactionHash)
     setIsPending(false)
    }}
