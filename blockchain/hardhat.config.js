@@ -26,11 +26,12 @@ module.exports = {
 			url: "https://alfajores-forno.celo-testnet.org",
 			accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
 			chainId: 44787,
+			timeout: 60000,
 		},
 		celoSepolia: {
-			url: "https://celo-sepolia.publicnode.com",
+			url: "https://forno.celo-sepolia.celo-testnet.org",
 			accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-			chainId: 44787,
+			chainId: 11142220,
 		},
 		celo: {
 			url: "https://forno.celo.org",

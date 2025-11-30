@@ -13,8 +13,5 @@
     "blockchain:test": "npm run test --workspace=blockchain",
     "frontend:lint": "npm run lint --workspace=frontend",
     "frontend:tsc": "tsc --noEmit --project frontend/tsconfig.json"
-  },
-  "dependencies": {
-    "@composer-kit/ui": "^0.0.3"
   }
 }

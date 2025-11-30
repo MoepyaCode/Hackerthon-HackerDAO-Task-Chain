@@ -1,11 +1,32 @@
 import type { User, UserProfile, ContributionType, ContributionMetadata } from "@/@types";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@clerk/nextjs/server";
 
 // Service for managing user profiles and wallet linking
 export class UserService {
 	static async getCurrentUser(): Promise<User | null> {
-		// TODO: Get from Clerk context
-		return null;
+		try {
+			const { userId } = await auth();
+			if (!userId) return null;
+
+			const user = await prisma.user.findUnique({
+				where: { clerkId: userId },
+			});
+
+			if (!user) return null;
+
+			return {
+				id: user.id,
+				clerkId: user.clerkId,
+				walletAddress: user.walletAddress || undefined,
+				githubUsername: user.githubUsername || undefined,
+				createdAt: user.createdAt,
+				updatedAt: user.updatedAt,
+			};
+		} catch (error) {
+			console.error("Error getting current user:", error);
+			return null;
+		}
 	}
 
 	static async getUserProfile(userId: string): Promise<UserProfile | null> {

@@ -20,6 +20,8 @@ export async function getRepositoryContributions(
 			per_page: 100,
 		});
 
+		console.log("Pull Requests fetched:", pullRequests.slice(0, 5)); // Log first 5 PRs for debugging
+
 		// Fetch Issues (excluding PRs)
 		const { data: issues } = await octokit.rest.issues.listForRepo({
 			owner,
@@ -28,6 +30,7 @@ export async function getRepositoryContributions(
 			since: sinceDate.toISOString(),
 			per_page: 100,
 		});
+		console.log("Issues fetched:", issues.slice(0, 5)); // Log first 5 issues for debugging
 
 		// Fetch Commits
 		const { data: commits } = await octokit.rest.repos.listCommits({
@@ -36,6 +39,7 @@ export async function getRepositoryContributions(
 			since: sinceDate.toISOString(),
 			per_page: 100,
 		});
+		console.log("Commits fetched:", commits.slice(0, 5)); // Log first 5 commits for debugging
 
 		return {
 			pullRequests: pullRequests.map((pr) => ({

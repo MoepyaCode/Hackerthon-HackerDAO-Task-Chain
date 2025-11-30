@@ -16,10 +16,21 @@ async function main() {
 	// For RewardPool, we need the CELO token address
 	// On Celo mainnet: 0x471EcE3750Da237f93B8E339c536989b8978a438
 	// On Alfajores: 0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9
-	const celoTokenAddress =
-		network.name === "celo"
-			? "0x471EcE3750Da237f93B8E339c536989b8978a438"
-			: "0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9";
+	let celoTokenAddress;
+
+	if (network.name === "celo") {
+		celoTokenAddress = "0x471EcE3750Da237f93B8E339c536989b8978a438";
+	} else if (network.name === "alfajores" || network.chainId === 44787) {
+		celoTokenAddress = "0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9";
+	} else {
+		// For Sepolia or other testnets, deploy a mock token
+		console.log("Deploying MockToken for testing...");
+		const MockToken = await ethers.getContractFactory("MockToken");
+		const mockToken = await MockToken.deploy();
+		await mockToken.deployed();
+		celoTokenAddress = mockToken.address;
+		console.log("✅ MockToken deployed to:", celoTokenAddress);
+	}
 
 	console.log("Deploying RewardPool...");
 	const RewardPool = await ethers.getContractFactory("RewardPool");

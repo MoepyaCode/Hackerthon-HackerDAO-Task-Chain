@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import contracts from "./contracts.json";
 
 // Extend window interface for MetaMask
 declare global {
@@ -13,10 +14,12 @@ declare global {
 
 // Contract addresses from deployment
 export const CONTRACT_ADDRESSES = {
-	performanceTracker: "0x5FbDB2315678afecb367f032d93F642f64180aa3" as `0x${string}`,
-	rewardPool: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512" as `0x${string}`,
-	badgeNFT: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0" as `0x${string}`,
-	celoToken: "0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9" as `0x${string}`,
+	performanceTracker: (process.env.NEXT_PUBLIC_PERFORMANCE_TRACKER_ADDRESS ||
+		contracts.performanceTracker) as `0x${string}`,
+	rewardPool: (process.env.NEXT_PUBLIC_REWARD_POOL_ADDRESS ||
+		contracts.rewardPool) as `0x${string}`,
+	badgeNFT: (process.env.NEXT_PUBLIC_BADGE_NFT_ADDRESS || contracts.badgeNFT) as `0x${string}`,
+	celoToken: (process.env.NEXT_PUBLIC_CELO_TOKEN_ADDRESS || contracts.celoToken) as `0x${string}`,
 };
 
 // Updated ABIs to match deployed contracts

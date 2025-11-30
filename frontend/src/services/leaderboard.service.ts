@@ -11,25 +11,65 @@ export class LeaderboardService {
 	// Get leaderboard from DB cache (refreshed from on-chain data)
 	static async getLeaderboard(filters: LeaderboardFilters): Promise<LeaderboardEntry[]> {
 		try {
-			// Check if we have cached data
-			const cached = await prisma.cachedLeaderboard.findUnique({
-				where: { period: filters.period || "weekly" },
-			});
-
-			if (cached && cached.expiresAt > new Date()) {
-				const cachedData = JSON.parse(cached.data as string) as LeaderboardData;
-				return cachedData.leaderboardData || [];
+			// Calculate date range based on period
+			let dateFilter = {};
+			const now = new Date();
+			if (filters.period === "WEEKLY") {
+				const lastWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+				dateFilter = { createdAt: { gte: lastWeek } };
+			} else if (filters.period === "MONTHLY") {
+				const lastMonth = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+				dateFilter = { createdAt: { gte: lastMonth } };
 			}
 
-			// TODO: Fetch from on-chain contracts and cache
-			// For now, return mock data
-			const response = await fetch("/data/leaderboard.json");
-			const data: LeaderboardData = await response.json();
+			// Fetch users with their contributions
+			const users = await prisma.user.findMany({
+				where: {
+					contributions: {
+						some: dateFilter,
+					},
+				},
+				include: {
+					contributions: {
+						where: dateFilter,
+					},
+				},
+			});
 
-			// Cache the data
-			await this.cacheLeaderboard(filters.period || "weekly", data);
+			// Calculate stats for each user
+			const leaderboard = users.map((user) => {
+				const points = user.contributions.reduce((sum, c) => sum + c.points, 0);
+				const issues = user.contributions.filter(
+					(c) => c.contributionType === "issue",
+				).length;
+				const prs = user.contributions.filter((c) => c.contributionType === "pr").length;
+				const commits = user.contributions.filter(
+					(c) => c.contributionType === "commit",
+				).length;
 
-			return data.leaderboardData;
+				return {
+					userId: user.id,
+					githubUsername: user.githubUsername || "Unknown",
+					avatarUrl: null, // TODO: Add avatar URL to User model
+					totalPoints: points,
+					issuesClosed: issues,
+					prsOpened: prs,
+					prsMerged: 0, // Not tracked separately yet
+					commitsPushed: commits,
+					change: 0, // TODO: Calculate rank change
+					rank: 0,
+				};
+			});
+
+			// Sort by points descending
+			leaderboard.sort((a, b) => b.totalPoints - a.totalPoints);
+
+			// Assign ranks
+			leaderboard.forEach((entry, index) => {
+				entry.rank = index + 1;
+			});
+
+			return leaderboard;
 		} catch (error) {
 			console.error("Error fetching leaderboard:", error);
 			return [];

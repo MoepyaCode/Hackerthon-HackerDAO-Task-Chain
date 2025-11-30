@@ -1,102 +1,204 @@
-import { Webhook } from 'svix';
-import { headers } from 'next/headers';
-import { WebhookEvent } from '@clerk/nextjs/server';
-import { NextResponse } from 'next/server';
+import { Webhook } from "svix";
+import { headers } from "next/headers";
+import { WebhookEvent } from "@clerk/nextjs/server";
+import { prisma } from "@/lib/prisma";
 
 export async function POST(req: Request) {
-  const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
+	const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
 
-  if (!WEBHOOK_SECRET) {
-    throw new Error('Please add CLERK_WEBHOOK_SECRET to .env.local');
-  }
+	if (!WEBHOOK_SECRET) {
+		throw new Error("Please add CLERK_WEBHOOK_SECRET to .env.local");
+	}
 
-  // Get the headers
-  const headerPayload = await headers();
-  const svix_id = headerPayload.get('svix-id');
-  const svix_timestamp = headerPayload.get('svix-timestamp');
-  const svix_signature = headerPayload.get('svix-signature');
+	// Get the headers
+	const headerPayload = await headers();
+	const svix_id = headerPayload.get("svix-id");
+	const svix_timestamp = headerPayload.get("svix-timestamp");
+	const svix_signature = headerPayload.get("svix-signature");
 
-  // If there are no headers, error out
-  if (!svix_id || !svix_timestamp || !svix_signature) {
-    return new Response('Error: Missing svix headers', {
-      status: 400,
-    });
-  }
+	// If there are no headers, error out
+	if (!svix_id || !svix_timestamp || !svix_signature) {
+		return new Response("Error: Missing svix headers", {
+			status: 400,
+		});
+	}
 
-  // Get the body
-  const payload = await req.json();
-  const body = JSON.stringify(payload);
+	// Get the body
+	const payload = await req.json();
+	const body = JSON.stringify(payload);
 
-  // Create a new Svix instance with your secret
-  const wh = new Webhook(WEBHOOK_SECRET);
+	// Create a new Svix instance with your secret
+	const wh = new Webhook(WEBHOOK_SECRET);
 
-  let evt: WebhookEvent;
+	let evt: WebhookEvent;
 
-  // Verify the payload with the headers
-  try {
-    evt = wh.verify(body, {
-      'svix-id': svix_id,
-      'svix-timestamp': svix_timestamp,
-      'svix-signature': svix_signature,
-    }) as WebhookEvent;
-  } catch (err) {
-    console.error('Error verifying webhook:', err);
-    return new Response('Error: Verification failed', {
-      status: 400,
-    });
-  }
+	// Verify the payload with the headers
+	try {
+		evt = wh.verify(body, {
+			"svix-id": svix_id,
+			"svix-timestamp": svix_timestamp,
+			"svix-signature": svix_signature,
+		}) as WebhookEvent;
+	} catch (err) {
+		console.error("Error verifying webhook:", err);
+		return new Response("Error: Verification failed", {
+			status: 400,
+		});
+	}
 
-  // Handle the webhook
-  const eventType = evt.type;
+	// Handle the webhook
+	const eventType = evt.type;
 
-  console.log(`Webhook received: ${eventType}`);
+	console.log(`Webhook received: ${eventType}`);
 
-  switch (eventType) {
-    case 'organization.created':
-      console.log('Organization created:', evt.data);
-      // TODO: Save organization to your database
-      // const { id, name, slug, created_by } = evt.data;
-      // await db.organization.create({ clerkId: id, name, slug, ownerId: created_by });
-      break;
+	try {
+		switch (eventType) {
+			case "organization.created": {
+				console.log("Organization created:", evt.data);
+				const { id, name, created_by } = evt.data;
 
-    case 'organization.updated':
-      console.log('Organization updated:', evt.data);
-      // TODO: Update organization in database
-      break;
+				await prisma.organization.create({
+					data: {
+						id: id, // Use Clerk ID as the ID
+						name: name,
+						adminId: created_by || "",
+					},
+				});
+				break;
+			}
 
-    case 'organization.deleted':
-      console.log('Organization deleted:', evt.data);
-      // TODO: Remove organization from database
-      break;
+			case "organization.updated": {
+				console.log("Organization updated:", evt.data);
+				const { id, name } = evt.data;
 
-    case 'organizationMembership.created':
-      console.log('Organization membership created:', evt.data);
-      // TODO: Track new member
-      break;
+				await prisma.organization.update({
+					where: { id },
+					data: { name },
+				});
+				break;
+			}
 
-    case 'organizationMembership.updated':
-      console.log('Organization membership updated:', evt.data);
-      // TODO: Update member role or status
-      break;
+			case "organization.deleted": {
+				console.log("Organization deleted:", evt.data);
+				const { id } = evt.data;
 
-    case 'organizationMembership.deleted':
-      console.log('Organization membership deleted:', evt.data);
-      // TODO: Remove member tracking
-      break;
+				await prisma.organization.delete({
+					where: { id },
+				});
+				break;
+			}
 
-    case 'user.created':
-      console.log('User created:', evt.data);
-      // TODO: Create user in database
-      break;
+			case "organizationMembership.created": {
+				console.log("Organization membership created:", evt.data);
+				const { organization, public_user_data, role } = evt.data;
 
-    case 'user.updated':
-      console.log('User updated:', evt.data);
-      // TODO: Update user in database
-      break;
+				const user = await prisma.user.findUnique({
+					where: { clerkId: public_user_data.user_id },
+				});
 
-    default:
-      console.log(`Unhandled event type: ${eventType}`);
-  }
+				if (user) {
+					await prisma.organizationMember.create({
+						data: {
+							organizationId: organization.id,
+							userId: user.id,
+							role: role,
+						},
+					});
+				} else {
+					console.warn(
+						`User not found for membership creation: ${public_user_data.user_id}`,
+					);
+				}
+				break;
+			}
 
-  return NextResponse.json({ received: true });
+			case "organizationMembership.deleted": {
+				console.log("Organization membership deleted:", evt.data);
+				const { organization, public_user_data } = evt.data;
+
+				const user = await prisma.user.findUnique({
+					where: { clerkId: public_user_data.user_id },
+				});
+
+				if (user) {
+					await prisma.organizationMember.delete({
+						where: {
+							userId_organizationId: {
+								userId: user.id,
+								organizationId: organization.id,
+							},
+						},
+					});
+				}
+				break;
+			}
+
+			case "user.created": {
+				console.log("User created:", evt.data);
+				const { id, username, external_accounts } = evt.data;
+
+				// Try to find GitHub username from external accounts
+				let githubUsername = username;
+				if (external_accounts && Array.isArray(external_accounts)) {
+					const githubAccount = external_accounts.find(
+						(acc) => acc.provider === "oauth_github",
+					);
+					if (githubAccount && githubAccount.username) {
+						githubUsername = githubAccount.username;
+					}
+				}
+
+				await prisma.user.create({
+					data: {
+						clerkId: id,
+						githubUsername: githubUsername || null,
+					},
+				});
+				break;
+			}
+
+			case "user.updated": {
+				console.log("User updated:", evt.data);
+				const { id, username, external_accounts } = evt.data;
+
+				let githubUsername = username;
+				if (external_accounts && Array.isArray(external_accounts)) {
+					const githubAccount = external_accounts.find(
+						(acc) => acc.provider === "oauth_github",
+					);
+					if (githubAccount && githubAccount.username) {
+						githubUsername = githubAccount.username;
+					}
+				}
+
+				await prisma.user.update({
+					where: { clerkId: id },
+					data: {
+						githubUsername: githubUsername || null,
+					},
+				});
+				break;
+			}
+
+			case "user.deleted": {
+				console.log("User deleted:", evt.data);
+				const { id } = evt.data;
+
+				if (id) {
+					await prisma.user.delete({
+						where: { clerkId: id },
+					});
+				}
+				break;
+			}
+
+			default:
+				console.log(`Unhandled event type: ${eventType}`);
+		}
+	} catch (error) {
+		console.error("Error handling webhook event:", error);
+		return new Response("Error processing webhook", { status: 500 });
+	}
+
+	return new Response("Webhook received", { status: 200 });
 }
