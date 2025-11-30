@@ -1,0 +1,8 @@
+{
+  "network": "celoSepolia",
+  "performanceTracker": "0x4EaB9E00C41bBF9A34152c75Dc78caeb24F4edf8",
+  "rewardPool": "0x202409e1Ad8aBE4DEB0f90867FaAFdA268C879C4",
+  "badgeNFT": "0x8C0130202d82fA2044A87D3f580d10E467850aAf",
+  "celoToken": "0x9396c2dBB320E281e8abed4F1179a50D58D2011d",
+  "deployedAt": "2025-11-30T18:04:56.445Z"
+}

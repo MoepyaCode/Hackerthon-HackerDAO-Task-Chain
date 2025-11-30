@@ -1,36 +1,151 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TaskChain Monorepo
 
-## Getting Started
+A decentralized application that gamifies developer contributions on GitHub, tracks performance on-chain, and distributes crypto rewards on Celo.
 
-First, run the development server:
+## Architecture
+
+**On-Chain (Blockchain)**: Core immutable data
+
+-   User contributions and points (PerformanceTracker contract)
+-   Reward distributions and claims (RewardPool contract)
+-   NFT badges for milestones (BadgeNFT contract)
+-   Transparent leaderboard calculations
+
+**Off-Chain (Database)**: Supporting data that can't be stored on-chain
+
+-   User profiles and Clerk authentication mapping
+-   Organization metadata and GitHub repo configurations
+-   Cached on-chain data for performance
+-   Transaction logs and analytics
+
+## Project Structure
+
+-   **`blockchain/`**: Smart contracts and deployment scripts
+-   **`frontend/`**: Next.js dApp with Clerk auth and wallet integration
+-   **Database**: SQLite (development) / PostgreSQL (production) via Prisma ORM
+
+## Tech Stack
+
+-   **Frontend**: Next.js 16, Clerk, Tailwind CSS
+-   **Blockchain**: Solidity, Hardhat, Celo network
+-   **Database**: Prisma ORM, SQLite/PostgreSQL
+-   **Authentication**: Clerk (GitHub OAuth + wallet linking)
+
+## Quick Start
+
+### Prerequisites
+
+-   Node.js 18+
+-   npm/yarn
+
+### Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Database Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+cd frontend
+npx prisma generate
+npx prisma migrate dev --name init
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Development
 
-## Learn More
+```bash
+# Frontend
+npm run dev
 
-To learn more about Next.js, take a look at the following resources:
+# Blockchain contracts
+cd blockchain
+npm run compile
+npm run test
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Environment Variables
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Create `.env.local` in `frontend/`:
 
-## Deploy on Vercel
+```bash
+# Clerk keys
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=...
+CLERK_SECRET_KEY=...
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Database (optional, uses SQLite by default)
+DATABASE_URL="file:./dev.db"
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deployment
+
+### Smart Contracts
+
+```bash
+cd blockchain
+npm run deploy:alfajores  # Testnet
+npm run deploy:celo       # For mainnet
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm run build
+npm run start
+```
+
+```
+# Clerk keys
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=...
+CLERK_SECRET_KEY=...
+
+# Database (optional, uses SQLite by default)
+DATABASE_URL="file:./dev.db"
+```
+
+## Deployment
+
+### Smart Contracts
+
+```bash
+cd blockchain
+npm run deploy:alfajores  # Testnet
+npm run deploy:celo       # For mainnet
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm run build
+npm run start
+```
+
+## Data Flow
+
+1. **GitHub Integration**: Fetch contributions via GitHub API
+2. **On-Chain Logging**: Record contributions in PerformanceTracker contract
+3. **Points Calculation**: Smart contract calculates scores and rankings
+4. **Rewards Distribution**: RewardPool contract handles CELO payouts
+5. **NFT Badges**: BadgeNFT contract mints achievement tokens
+6. **Caching**: Prisma stores frequently accessed data for performance
+
+## Key Features
+
+-   **Transparent Tracking**: All contributions logged immutably on-chain
+-   **Crypto Rewards**: CELO token payouts for top performers
+-   **NFT Badges**: Soulbound tokens for milestones
+-   **Real-time Leaderboards**: On-chain rankings with off-chain caching
+-   **Wallet Integration**: MetaMask/Valora support for Celo network
+
+## Development Philosophy
+
+**Maximize On-Chain Data**: Store as much core data on-chain as possible for transparency and immutability, using database only for:
+
+-   Performance optimization (caching)
+-   Complex relationships not suitable for blockchain
+-   User session data and authentication mapping
+-   Analytics and reporting data
+
+This ensures TaskChain remains truly decentralized while maintaining good UX.
