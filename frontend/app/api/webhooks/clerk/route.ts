@@ -135,7 +135,7 @@ export async function POST(req: Request) {
 
 			case "user.created": {
 				console.log("User created:", evt.data);
-				const { id, username, external_accounts } = evt.data;
+				const { id, username, external_accounts, web3_wallets } = evt.data;
 
 				// Try to find GitHub username from external accounts
 				let githubUsername = username;
@@ -148,10 +148,17 @@ export async function POST(req: Request) {
 					}
 				}
 
+				// Extract Web3 Wallet
+				let walletAddress = null;
+				if (web3_wallets && Array.isArray(web3_wallets) && web3_wallets.length > 0) {
+					walletAddress = web3_wallets[0].web3_wallet;
+				}
+
 				await prisma.user.create({
 					data: {
 						clerkId: id,
 						githubUsername: githubUsername || null,
+						walletAddress: walletAddress,
 					},
 				});
 				break;
@@ -159,7 +166,7 @@ export async function POST(req: Request) {
 
 			case "user.updated": {
 				console.log("User updated:", evt.data);
-				const { id, username, external_accounts } = evt.data;
+				const { id, username, external_accounts, web3_wallets } = evt.data;
 
 				let githubUsername = username;
 				if (external_accounts && Array.isArray(external_accounts)) {
@@ -171,10 +178,17 @@ export async function POST(req: Request) {
 					}
 				}
 
+				// Extract Web3 Wallet
+				let walletAddress = null;
+				if (web3_wallets && Array.isArray(web3_wallets) && web3_wallets.length > 0) {
+					walletAddress = web3_wallets[0].web3_wallet;
+				}
+
 				await prisma.user.update({
 					where: { clerkId: id },
 					data: {
 						githubUsername: githubUsername || null,
+						walletAddress: walletAddress, // Update wallet address if changed
 					},
 				});
 				break;

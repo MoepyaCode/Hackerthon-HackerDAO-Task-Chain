@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "NEXT_USE_TURBOPACK=0 next dev",
+    "postinstall": "npx prisma generate",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
