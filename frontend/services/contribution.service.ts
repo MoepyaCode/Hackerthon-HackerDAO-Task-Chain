@@ -28,12 +28,23 @@ export class ContributionService {
 			return contributions.map((c) => ({
 				id: c.id,
 				userId: c.userId,
-				organizationId: c.repo?.organizationId || "",
-				repositoryId: c.repoId || "",
-				type: c.contributionType as ContributionType,
+				repoId: c.repoId,
+				contributionType: c.contributionType,
+				externalId: c.externalId,
 				points: c.points,
-				metadata: c.metadata as ContributionMetadata,
+				metadata: c.metadata,
+				onChainTxHash: c.onChainTxHash,
 				createdAt: c.createdAt,
+				repo: c.repo
+					? {
+							fullName: c.repo.fullName,
+							organization: c.repo.organization
+								? {
+										name: c.repo.organization.name,
+								  }
+								: undefined,
+					  }
+					: undefined,
 			}));
 		} catch (error) {
 			console.error("Error fetching user contributions:", error);

@@ -1,16 +1,6 @@
 import type { Reward, RewardPool, RewardTransaction } from "@/@types";
 import { prisma } from "@/lib/prisma";
-
-interface WalletData {
-	walletData: {
-		address: string;
-		balance: string;
-		totalEarned: string;
-		pendingRewards: string;
-	};
-	transactions: RewardTransaction[];
-	badges: string[];
-}
+import { BadgeService } from "./badge.service";
 
 // Service for managing rewards - combines on-chain data with DB caching
 export class RewardService {
@@ -104,9 +94,24 @@ export class RewardService {
 	// Get wallet data - combines on-chain balance with DB transactions (SERVER-SIDE ONLY)
 	static async getWalletDataServer(userId: string) {
 		try {
-			// Get cached wallet data (in production, fetch from on-chain)
-			const response = await fetch("/data/wallet.json");
-			const mockData: WalletData = await response.json();
+			// Fetch user data
+			const user = await prisma.user.findUnique({
+				where: { id: userId },
+			});
+
+			if (!user) {
+				throw new Error("User not found");
+			}
+
+			// Calculate rewards from DB
+			const rewards = await prisma.reward.findMany({
+				where: { userId },
+			});
+
+			const totalEarned = rewards.reduce((sum, r) => sum + parseFloat(r.amount), 0);
+			const pendingRewards = rewards
+				.filter((r) => !r.claimedAt)
+				.reduce((sum, r) => sum + parseFloat(r.amount), 0);
 
 			// Get transactions from DB
 			const dbTransactions = await prisma.reward.findMany({
@@ -125,24 +130,28 @@ export class RewardService {
 				description: `${r.rewardType} reward`,
 			}));
 
-			return {
-				...mockData,
-				transactions,
-			};
-		} catch (error) {
-			console.error("Error getting wallet data:", error);
-			throw error;
-		}
-	}
+			// Get badges
+			const userBadges = await BadgeService.getUserBadges(userId);
+			const badges = userBadges.map((ub) => ({
+				id: ub.badge.id,
+				name: ub.badge.name,
+				description: ub.badge.description,
+				imageUrl: ub.badge.imageUrl,
+				earnedAt: ub.earnedAt.toISOString(),
+				isMinted: ub.isMinted,
+				nftTokenId: ub.badge.nftTokenId,
+			}));
 
-	// Get wallet data - CLIENT-SIDE version that calls API
-	static async getWalletData(userId: string) {
-		try {
-			const response = await fetch("/api/wallet");
-			if (!response.ok) {
-				throw new Error("Failed to fetch wallet data");
-			}
-			return await response.json();
+			return {
+				walletData: {
+					address: user.walletAddress || "Not Connected",
+					balance: "0.00", // TODO: Fetch real balance from blockchain
+					totalEarned: totalEarned.toFixed(2),
+					pendingRewards: pendingRewards.toFixed(2),
+				},
+				transactions,
+				badges,
+			};
 		} catch (error) {
 			console.error("Error getting wallet data:", error);
 			throw error;

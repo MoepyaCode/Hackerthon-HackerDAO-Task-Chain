@@ -25,8 +25,8 @@ import {
 } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBullseye, faRocket, faFire, faCertificate } from '@fortawesome/free-solid-svg-icons';
-// import { RewardService } from '@/services/reward.service'; // Moved to dynamic import
 import { UserStats, LogContribution, ClaimRewards, MintBadge } from '@/components/contracts';
+import { RewardClientService } from '@/services/reward.client';
 
 interface WalletData {
     address: string;
@@ -79,11 +79,8 @@ export default function WalletPage() {
     useEffect(() => {
         async function loadData() {
             try {
-                // Dynamic import to avoid Prisma client initialization during SSR
-                const { RewardService } = await import('@/services/reward.service');
-
                 // Using service layer to load data
-                const walletData = await RewardService.getWalletData('current-user');
+                const walletData = await RewardClientService.getWalletData('current-user');
                 setData(walletData);
                 setLoading(false);
             } catch (err) {
@@ -426,7 +423,7 @@ export default function WalletPage() {
                                     <h4 className="text-sm font-medium text-slate-200">Mint Badge</h4>
                                     <div className="flex gap-2 flex-wrap">
                                         <MintBadge
-                                            badgeId={1}
+                                            badgeId="first-contribution"
                                             onSuccess={(txHash) => {
                                                 console.log('Badge minted successfully:', txHash)
                                                 // Refresh data or show success message
@@ -437,7 +434,7 @@ export default function WalletPage() {
                                             }}
                                         />
                                         <MintBadge
-                                            badgeId={2}
+                                            badgeId="prs-10"
                                             onSuccess={(txHash) => {
                                                 console.log('Badge minted successfully:', txHash)
                                                 // Refresh data or show success message

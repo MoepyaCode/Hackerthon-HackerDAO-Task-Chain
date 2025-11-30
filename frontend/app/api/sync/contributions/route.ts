@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { ContributionService } from "@/services/contribution.service";
 import { GitHubPullRequest, GitHubIssue, GitHubCommit } from "@/@types/github";
 import { ContributionMetadata } from "@/@types/contribution";
+import { logContributionOnChain, addRewardToPool } from "@/lib/blockchain-admin";
 
 export async function POST(req: Request) {
 	try {
@@ -94,6 +95,22 @@ export async function POST(req: Request) {
 					undefined, // No tx hash yet
 					metadata,
 				);
+
+				// Trigger blockchain updates if user has wallet connected
+				if (user.walletAddress) {
+					try {
+						// Log contribution on-chain
+						await logContributionOnChain(user.walletAddress, type, points);
+
+						// Add reward to pool (1 Point = 1 Token for now)
+						await addRewardToPool(user.walletAddress, points);
+					} catch (err) {
+						console.error(
+							`Failed to update blockchain for user ${user.githubUsername}:`,
+							err,
+						);
+					}
+				}
 
 				processedStats[
 					type === "pr" ? "pullRequests" : type === "issue" ? "issues" : "commits"

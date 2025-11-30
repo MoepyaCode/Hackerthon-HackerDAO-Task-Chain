@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { UserBadge, Badge } from "@/@types";
 import { BadgeMilestone } from "@/@types/badge";
 import { prisma } from "@/lib/prisma";
@@ -59,8 +60,11 @@ export class BadgeService {
 			_count: true,
 		});
 
-		const totalContributions = stats.reduce((acc, curr) => acc + curr._count, 0);
-		const prs = stats.find((s) => s.contributionType === "pr")?._count || 0;
+		const totalContributions: number = stats.reduce(
+			(acc: number, curr: any) => acc + (curr._count as number),
+			0,
+		);
+		const prs = (stats.find((s: any) => s.contributionType === "pr") as any)?._count || 0;
 
 		const eligible: Badge[] = [];
 

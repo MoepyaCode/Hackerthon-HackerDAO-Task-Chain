@@ -1,12 +1,19 @@
 export interface Contribution {
 	id: string;
 	userId: string;
-	organizationId: string;
-	repositoryId: string;
-	type: ContributionType;
+	repoId: string | null;
+	contributionType: string; // Was type: ContributionType
+	externalId: string;
 	points: number;
-	metadata: ContributionMetadata;
+	metadata: any; // Was ContributionMetadata
+	onChainTxHash: string | null;
 	createdAt: Date;
+	repo?: {
+		fullName: string;
+		organization?: {
+			name: string;
+		};
+	};
 }
 
 export interface ContributionMetadata {
